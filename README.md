@@ -21,7 +21,7 @@ This program is released under the MIT License.
 ## Techniques
 
 This program implements the abstract data type `Tree` (ADT), partially following the basic design of Dr. Le, Minh Duc.
-<br/>A feature that stands out from the prototype design is the `Tree` implemented to Java's `Collections` interface.
+<br/>A feature that stands out from the prototype design is the `Tree` implemented to Java's `Collection` interface.
 <br/>Moreover, it does use two `HashMap` attributes to reduce the time complexity while traversing the tree.
 
 Specifically, The first `HashMap` attributes is `parentEdges`.
