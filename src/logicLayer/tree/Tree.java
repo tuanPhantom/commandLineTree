@@ -845,9 +845,9 @@ public class Tree<T> implements Collection<T>, Serializable {
      *       if node.label is File
      *         sb.append("│   ")
      *       else
-     *         sb.append("├───")
+     *         sb.append("└───")
      *     else
-     *       sb.append("│   ")
+     *       sb.append("    ")
      */
     private void stylizedDeterminer(StringBuilder sb, Node<T> node, boolean isTheAppendingNode) {
         T label = node.getLabel();
