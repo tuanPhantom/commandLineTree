@@ -47,7 +47,7 @@ public class Client {
 
     private String getDir() {
         Scanner sc = new Scanner(System.in);
-        System.out.print("enter folder name: ");
+        System.out.print("Enter path: ");
         String answer = sc.nextLine();
 
         Pattern p = Pattern.compile("^(.+)( -s)$");
