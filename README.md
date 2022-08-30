@@ -32,7 +32,7 @@ This property allows to trace the edges of a node to the ancestral nodes all the
 The Second `HashMap` attributes is `properF1DescEdges`. It records the edges of a node for its "F1" child nodes.
 ![img.png](imgs/3.png)
 
-## Usage
+## Optional Syntax
 
 There is a suffix when typing your path to style the Tree: ` -s`.
 <pre>
