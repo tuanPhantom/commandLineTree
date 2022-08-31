@@ -22,7 +22,7 @@ The Second `HashMap` attributes is `properF1DescEdges`. It records the edges of 
 
 Enter the path of the desired folder.
 
-![img.png](imgs/5.png)
+![img.png](imgs/4.png)
 
 ## Optional Argument
 
@@ -35,7 +35,7 @@ C:/your-path/a-folder/ -s
 </pre>
 With this Argument, It is possible to distinguish between directory and file.
 
-![img.png](imgs/4.png)
+![img.png](imgs/5.png)
 
 ## About the author
 
