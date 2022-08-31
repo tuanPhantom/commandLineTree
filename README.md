@@ -4,20 +4,6 @@ A Console-based program to print tree of folders and files of a specific path.
 
 ![img.png](imgs/1.png)
 
-## About the author
-
-Phan Quang Tuan, a Software Engineering student of FIT HANU.
-
-References:
-<br/>[1] Dr. Le, Minh Duc. <i>Object Oriented Program Development Undergraduate Programming CourseBook</i>.
-<br/>[2] Mr. Dang Dinh Quan. SE1 F2021 Course Slides.
-<br/>[3] Liskov, B., & Guttag, J. (2001). <i>Program Development in Java: Abstraction, Specification, and
-Object-Oriented Design.</i> Addison-Wesley.
-
-## License
-
-This program is released under the MIT License.
-
 ## Techniques
 
 This program implements the abstract data type `Tree` (ADT), partially following the basic design of Dr. Le, Minh Duc.
@@ -32,13 +18,35 @@ This property allows to trace the edges of a node to the ancestral nodes all the
 The Second `HashMap` attributes is `properF1DescEdges`. It records the edges of a node for its "F1" child nodes.
 ![img.png](imgs/3.png)
 
-## Optional Syntax
+## Usage
 
-There is a suffix when typing your path to style the Tree: ` -s`.
+Enter the path of the desired folder.
+
+![img.png](imgs/5.png)
+
+## Optional Argument
+
+There is an Argument when typing your path to style the Tree: ` -s`.
+
+A Complete syntax should be `--path [-s]`
 <pre>
 For example:
 C:/your-path/a-folder/ -s
 </pre>
-With this suffix, It is possible to distinguish between directory and file.
+With this Argument, It is possible to distinguish between directory and file.
 
 ![img.png](imgs/4.png)
+
+## About the author
+
+Phan Quang Tuan, a Software Engineering student of FIT HANU.
+
+References:
+<br/>[1] Dr. Le, Minh Duc. <i>Object Oriented Program Development Undergraduate Programming CourseBook</i>.
+<br/>[2] Mr. Dang Dinh Quan. SE1 F2021 Course Slides.
+<br/>[3] Liskov, B., & Guttag, J. (2001). <i>Program Development in Java: Abstraction, Specification, and
+Object-Oriented Design.</i> Addison-Wesley.
+
+## License
+
+This program is released under the MIT License.
