@@ -26,14 +26,14 @@ Enter the path of the desired folder.
 
 ## Optional Argument
 
-There is an Argument when typing your path to style the Tree: ` -s`.
+There is an optional argument when typing your path to style the Tree: ` -s`.
 
 A Complete syntax should be `--path [-s]`
 <pre>
 For example:
 C:/your-path/a-folder/ -s
 </pre>
-With this Argument, It is possible to distinguish between directory and file.
+With this argument, It is possible to distinguish between directory and file.
 
 ![img.png](imgs/5.png)
 
