@@ -12,10 +12,10 @@ This program implements the abstract data type `Tree` (ADT), partially following
 
 Specifically, The first `HashMap` attributes is `parentEdges`.
 <br/>
-This property allows to trace the edges of a node to the ancestral nodes all the way to the root of the tree.
+This property allows to trace the edges of each node to the ancestral nodes all the way to the root of the tree.
 ![img.png](imgs/2.png)
 <br/><br/>
-The Second `HashMap` attributes is `properF1DescEdges`. It records the edges of a node for its "F1" child nodes.
+The Second `HashMap` attributes is `properF1DescEdges`. It records each node's edges to its "F1" child nodes.
 ![img.png](imgs/3.png)
 
 ## Usage
