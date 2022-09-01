@@ -6,13 +6,17 @@ A Console-based program to print tree of folders and files of a specific path.
 
 ## Techniques
 
-This program implements the abstract data type `Tree` (ADT), partially following the basic design of Dr. Le, Minh Duc.
-<br/>A feature that stands out from the prototype design is the `Tree` implemented to Java's `Collection` interface.
-<br/>Moreover, it does use two `HashMap` attributes to reduce the time complexity while traversing the tree.
+- This program implements the abstract data type `Tree` (ADT), <strong>partially</strong> following the basic design of
+  Dr. Le, Minh Duc.
+- It also implements Java's `Collection` interface.
+- A feature that stands out from the prototype design is:
+  <br/>Instead of using two `Vector` properties to store nodes and edges, the program is built around two `HashMap`
+  properties to reduce time complexity while traversing the tree.
 
 Specifically, The first `HashMap` attributes is `parentEdges`.
 <br/>
-This property allows to trace the edges of each node to the ancestral nodes all the way to the root of the tree.
+This property allows edge storage that connects a node to its parent node. With something similar to a `while` loop, it
+is possible to trace the edges of each node to the ancestral nodes all the way to the root of the tree.
 ![img.png](imgs/2.png)
 <br/><br/>
 The Second `HashMap` attributes is `properF1DescEdges`. It records each node's edges to its "F1" child nodes.
