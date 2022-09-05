@@ -6,9 +6,9 @@ A Console-based program to print tree of folders and files of a specific path.
 
 ## Note:
 
-Note: For some environments such as `Windows cmd` or `Eclipse`, the program may not be displayed correctly due to the use of
-extended ASCII characters. Please use any text file encoding in your IDE that supports extended ASCII like Unicode,
-UTF-8, ... Besides, `IntelliJ IDEA` has no display problem when running the program.
+Note: For some environments such as `Windows cmd` or `Eclipse`, the program may not be displayed correctly due to the
+use of extended ASCII characters. Please use any text file encoding in your IDE that supports extended ASCII like UTF-8.
+Besides, `IntelliJ IDEA` has no display problem when running the program.
 
 ## Techniques
 
