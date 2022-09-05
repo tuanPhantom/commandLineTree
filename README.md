@@ -4,7 +4,7 @@ A Console-based program to print tree of folders and files of a specific path.
 
 ![img.png](imgs/1.png)
 
-## Note:
+## Note
 
 For some environments such as `Windows cmd` or `Eclipse`, the program may not be displayed correctly due to the use of
 extended ASCII characters. Please use any text file encoding in your IDE that supports extended ASCII like UTF-8. For
