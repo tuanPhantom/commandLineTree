@@ -2,7 +2,7 @@
 
 A Console-based program to print tree of folders and files of a specific path.
 
-![img.png](img/1a.png)
+![img.png](img/1.png)
 
 ## Note
 
