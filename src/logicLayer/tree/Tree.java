@@ -12,7 +12,7 @@ import java.util.*;
  *    each of these map is connected to some other map that have not been
  *    connected, and so on.
  *    <p>The following is a <b>top-down</b> recursive design that incrementally build a
- *    treeNew by adding leaf map.
+ *    tree by adding leaf map.
  *
  * @attributes <pre>
  * root                     Node<T>
@@ -28,7 +28,7 @@ import java.util.*;
  *   Induction
  *    For all node n and logicLayer.tree T' and for some node p in T':
  *    n is not in T' ->
- *      T = <T'.root, T'.nodes+{n}, T'.edges+{edge(p,n)}> is a logicLayer.tree
+ *      T = <T'.root, T'.nodes+{n}, T'.edges+{edge(p,n)}> is a tree
  *
  * @rep_invariant
  *   root!=null &&
