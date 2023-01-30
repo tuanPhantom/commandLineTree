@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * @overview A treeNew is a set of map that are connected to each other by
+ * @overview A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
  *    connected, and so on.
@@ -17,7 +17,7 @@ import java.util.*;
  * @attributes <pre>
  * root                     Node<T>
  * parentEdges              HashMap<Node<T>, Edge<T>>
- * properF1DescEdges          HashMap<Node<T>, List<Edge<T>>>
+ * properF1DescEdges        HashMap<Node<T>, List<Edge<T>>>
  * </pre>
  * @Object a typical Tree is T:<r,e,d> where r is root, e is parentEdges,
  *         d is properF1DescEdges
@@ -32,22 +32,20 @@ import java.util.*;
  *
  * @rep_invariant
  *   root!=null &&
+ *   parentEdges.size = properF1DescEdges.size &&
  *   parentEdges!=null && parentEdges does not have duplicate values &&
  *   parentEdges.Edge<T>[i].getTgt() == parentEdges.Node<T>[i] | 0 < i < parentEdges.size &&
  *   properF1DescEdges!=null && all Lists in properF1DescEdges are not null /\ do not have duplicate values &&
  *     all elements in Lists of properF1DescEdges.values
- *     Edge<T>[i].getTgt() == properF1DescEdges.Node<T>[i] | 0 < i < properF1DescEdges.size &&
+ *     Edge<T>[i].getTgt() == properF1DescEdges.Node<T>[i] | 0 < i < properF1DescEdges.size
  *
- *   parentEdges.size + 1 = properF1DescEdges.size
- *   ~ edges.size + 1 = nodes.size + 1
  * @version 1.1
  * @author Phan Quang Tuan
  */
 public class Tree<T> implements Collection<T>, Serializable {
     private Node<T> root;
-    private HashMap<Node<T>, Edge<T>> parentEdges;      // as edges
-    private HashMap<Node<T>, List<Edge<T>>> properF1DescEdges;    // as nodes
-
+    private final HashMap<Node<T>, Edge<T>> parentEdges;      // as edges
+    private final HashMap<Node<T>, List<Edge<T>>> properF1DescEdges;    // as nodes
 
     /**
      * @effects init this as T:<null, {}, {}>
@@ -123,7 +121,7 @@ public class Tree<T> implements Collection<T>, Serializable {
     @Override
     public boolean contains(Object o) {
         try {
-            Node node = new Node<>(o);
+            Node<?> node = new Node<>(o);
             return properF1DescEdges.containsKey(node);
         } catch (NotPossibleException e) {
             e.printStackTrace();
@@ -142,7 +140,7 @@ public class Tree<T> implements Collection<T>, Serializable {
     }
 
     private class Generator implements Iterator<T> {
-        private Set<Node<T>> nodes;
+        private final Set<Node<T>> nodes;
         private int index;
 
         public Generator() {

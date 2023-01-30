@@ -5,9 +5,10 @@ import common.NotPossibleException;
 import logicLayer.tree.Tree;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class Test {
-    private static void addAll(Tree t1, Tree t2) {
+    private static <T> void addAll(Tree<T> t1, Tree<T> t2) {
         System.out.println(t1.addAll(t2));
         System.out.println(t1.getLabels() + "     " + Arrays.toString(t1.getLevelArray()));
         System.out.println(t1);
@@ -15,12 +16,12 @@ public class Test {
 
     public static void main(String[] args) {
         try {
-            Tree<Integer> a = new Tree(Arrays.asList(1, 2, 3, 4, 5));
-            Tree<Integer> b = new Tree(Arrays.asList(1, 2, 3));
-            Tree<Integer> c = new Tree(Arrays.asList(7, 8));
-            Tree<Integer> d = new Tree(Arrays.asList(9, 10));
-            Tree<Integer> e = new Tree(Arrays.asList(11));
-            Tree<Integer> f = new Tree(Arrays.asList(12));
+            Tree<Integer> a = new Tree<>(Arrays.asList(1, 2, 3, 4, 5));
+            Tree<Integer> b = new Tree<>(Arrays.asList(1, 2, 3));
+            Tree<Integer> c = new Tree<>(Arrays.asList(7, 8));
+            Tree<Integer> d = new Tree<>(Arrays.asList(9, 10));
+            Tree<Integer> e = new Tree<>(Collections.singletonList(11));
+            Tree<Integer> f = new Tree<>(Collections.singletonList(12));
             addAll(c, d); // 7,8,9,10           // 0,1,1,2
             c.add(13);    // 7891013            // 0,1,1,2,1
             System.out.println(Arrays.toString(c.getLevelArray()));
@@ -40,6 +41,10 @@ public class Test {
 //            System.out.println(b);
             System.out.println("-----------");
             addAll(e,b);
+
+            System.out.println("-----------");
+            Tree<Integer> e2 = e.clone();
+            System.out.println(e2);
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }
