@@ -40,7 +40,7 @@ public class Test {
 //            System.out.println(b.remove(7));
 //            System.out.println(b);
             System.out.println("-----------");
-            addAll(e,b);
+            addAll(e, b);
 
             System.out.println("-----------");
             Tree<Integer> e2 = e.clone();
@@ -53,6 +53,11 @@ public class Test {
                 tmp.add(iter.next());
             }
             System.out.println(tmp);
+
+            e2.remove(7);
+            System.out.println(e2);
+            e2.retainAll(Arrays.asList(11, 1, 2, 15));
+            System.out.println(e2);
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }

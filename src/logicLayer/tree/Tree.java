@@ -165,9 +165,10 @@ public class Tree<E> implements Set<E>, Serializable {
 
         @Override
         public void remove() {
-            Object[] arr = nodes.toArray();
-            Node<E> node = ((Node<E>) arr[index - 1]);
-            if (Tree.this.remove(node)) {
+//            Object[] arr = nodes.toArray();
+//            Node<E> node = ((Node<E>) arr[index - 1]);
+            Node<E> node = nodes.get(index - 1);
+            if (Tree.this.remove(node.getLabel())) {
                 index--;
             }
         }
@@ -375,10 +376,9 @@ public class Tree<E> implements Set<E>, Serializable {
      * @Time_complexity O(n ^ 2)
      * @requires c!=null;
      * @effects <pre>
-     *   for all Node n in nodes
-     *     for all elements o in c
-     *       if n.label==o.label
-     *         remove n
+     *   for all Node n in node
+     *      if n.label is not in c
+     *          remove n
      * </pre>
      */
     @Override
@@ -387,10 +387,8 @@ public class Tree<E> implements Set<E>, Serializable {
         Generator g = new Generator();
         while (g.hasNext()) {
             E label = g.next();
-            for (Object o : c) {
-                if (!label.equals(o)) {
-                    g.remove();
-                }
+            if (!c.contains(label)){
+                g.remove();
             }
         }
         return true;
