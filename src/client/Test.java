@@ -4,13 +4,13 @@ import logicLayer.tree.Node;
 import common.NotPossibleException;
 import logicLayer.tree.Tree;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class Test {
     private static <T> void addAll(Tree<T> t1, Tree<T> t2) {
         System.out.println(t1.addAll(t2));
-        System.out.println(t1.getLabels() + "     " + Arrays.toString(t1.getLevelArray()));
+        System.out.println(Arrays.toString(t1.toArray()) + "     " + Arrays.toString(t1.getLevelArray()));
+        System.out.println(Arrays.toString(t1.toArray(true)));
         System.out.println(t1);
     }
 
@@ -46,6 +46,13 @@ public class Test {
             Tree<Integer> e2 = e.clone();
             e2.add(3);
             System.out.println(e2);
+
+            Iterator<Integer> iter = e2.iterator();
+            List<Integer> tmp = new ArrayList<>();
+            while (iter.hasNext()) {
+                tmp.add(iter.next());
+            }
+            System.out.println(tmp);
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }

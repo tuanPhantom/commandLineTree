@@ -16,9 +16,9 @@ import java.util.*;
  *    tree by adding leaf map.
  *
  * @attributes <pre>
- * root                     Node<T>
- * parentEdges              HashMap<Node<T>, Edge<T>>
- * properF1DescEdges        HashMap<Node<T>, List<Edge<T>>>
+ * root                     Node<E>
+ * parentEdges              HashMap<Node<E>, Edge<E>>
+ * properF1DescEdges        HashMap<Node<E>, List<Edge<E>>>
  * </pre>
  * @Object a typical Tree is T:<r,e,d> where r is root, e is parentEdges,
  *         d is properF1DescEdges
@@ -35,18 +35,18 @@ import java.util.*;
  *   root!=null &&
  *   parentEdges.size = properF1DescEdges.size &&
  *   parentEdges!=null && parentEdges does not have duplicate values &&
- *   parentEdges.Edge<T>[i].getTgt() == parentEdges.Node<T>[i] | 0 < i < parentEdges.size &&
+ *   parentEdges.Edge<E>[i].getTgt() == parentEdges.Node<E>[i] | 0 < i < parentEdges.size &&
  *   properF1DescEdges!=null && all Lists in properF1DescEdges are not null /\ do not have duplicate values &&
  *     all elements in Lists of properF1DescEdges.values
- *     Edge<T>[i].getTgt() == properF1DescEdges.Node<T>[i] | 0 < i < properF1DescEdges.size
+ *     Edge<E>[i].getTgt() == properF1DescEdges.Node<E>[i] | 0 < i < properF1DescEdges.size
  *
- * @version 1.2
+ * @version 1.3
  * @author Phan Quang Tuan
  */
-public class Tree<T> implements Set<T>, Serializable {
-    private Node<T> root;
-    private final HashMap<Node<T>, Edge<T>> parentEdges;      // as edges
-    private final HashMap<Node<T>, List<Edge<T>>> properF1DescEdges;    // as nodes
+public class Tree<E> implements Set<E>, Serializable {
+    private Node<E> root;
+    private final HashMap<Node<E>, Edge<E>> parentEdges;      // as edges
+    private final HashMap<Node<E>, List<Edge<E>>> properF1DescEdges;    // as nodes
 
     /**
      * @effects init this as T:<null, {}, {}>
@@ -65,10 +65,10 @@ public class Tree<T> implements Set<T>, Serializable {
      *     throw new NotPossibleException
      * </pre>
      */
-    public Tree(T label) throws NotPossibleException {
+    public Tree(E label) throws NotPossibleException {
         this();
         if (label != null) {
-            Node<T> r = new Node<>(label);
+            Node<E> r = new Node<>(label);
             root = r;
             properF1DescEdges.put(r, new ArrayList<>());
         } else {
@@ -81,12 +81,12 @@ public class Tree<T> implements Set<T>, Serializable {
      * @effects <pre>
      *   if c!=null
      *     init this as T:<null, {}, {}>
-     *     addAll c to T
+     *     addAll c to E
      *   else
      *     throw new NotPossibleException
      * </pre>
      */
-    public Tree(Collection<? extends T> c) throws NotPossibleException {
+    public Tree(Collection<? extends E> c) throws NotPossibleException {
         this();
         boolean valid = addAll(c);
         if (!valid) {
@@ -136,16 +136,17 @@ public class Tree<T> implements Set<T>, Serializable {
      * </pre>
      */
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
         return new Generator();
     }
 
-    private class Generator implements Iterator<T> {
-        private final Set<Node<T>> nodes;
+    private class Generator implements Iterator<E> {
+        private final List<Node<E>> nodes;
         private int index;
 
         public Generator() {
-            nodes = Tree.this.properF1DescEdges.keySet();
+            //nodes = Tree.this.properF1DescEdges.keySet();     // wrong order
+            nodes = preOrderTraversal(root);
         }
 
         @Override
@@ -154,10 +155,10 @@ public class Tree<T> implements Set<T>, Serializable {
         }
 
         @Override
-        public T next() throws NoSuchElementException {
+        public E next() throws NoSuchElementException {
             if (hasNext()) {
                 Object[] arr = nodes.toArray();
-                return ((Node<T>) arr[index++]).getLabel();
+                return ((Node<E>) arr[index++]).getLabel();
             }
             throw new NoSuchElementException("There is no element");
         }
@@ -165,7 +166,7 @@ public class Tree<T> implements Set<T>, Serializable {
         @Override
         public void remove() {
             Object[] arr = nodes.toArray();
-            Node<T> node = ((Node<T>) arr[index - 1]);
+            Node<E> node = ((Node<E>) arr[index - 1]);
             if (Tree.this.remove(node)) {
                 index--;
             }
@@ -178,8 +179,32 @@ public class Tree<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <T1> T1[] toArray(T1[] a) {
-        return (T1[]) getLabels().toArray(new Object[a.length]);
+    public <T> T[] toArray(T[] a) {
+        return (T[]) getLabels().toArray(new Object[a.length]);
+    }
+
+    /**
+     * @effects <pre>
+     *  if preserveStructure is true
+     *      return an new array of the tree's structure
+     *  else
+     *      return 1-D array of Object(s) with all elements of the tree
+     * </pre>
+     */
+    public Object[] toArray(boolean preserveStructure) {
+       return preserveStructure ? preOrderTraversal_PS(root).toArray() : toArray();
+    }
+
+    /**
+     * @effects <pre>
+     *  if preserveStructure is true
+     *      return an new array of the tree's structure
+     *  else
+     *      return 1-D array of T(s) with all elements of the tree
+     * </pre>
+     */
+    public <T> T[] toArray(T[] a, boolean preserveStructure) {
+        return preserveStructure ? (T[]) preOrderTraversal_PS(root).toArray(new Object[a.length]) : toArray(a);
     }
 
     /**
@@ -196,11 +221,11 @@ public class Tree<T> implements Set<T>, Serializable {
      * </pre>
      */
     @Override
-    public boolean add(T label) {
+    public boolean add(E label) {
         if (label == null || contains(label)) {
             return false;
         } else {
-            Node<T> node;
+            Node<E> node;
             try {
                 node = new Node<>(label);
             } catch (NotPossibleException e) {
@@ -237,14 +262,14 @@ public class Tree<T> implements Set<T>, Serializable {
     public boolean remove(Object o) {
         if (contains(o)) {
             try {
-                Node<T> node = new Node<>((T) o);
+                Node<E> node = new Node<>((E) o);
                 if (node.equals(root)) {
                     clear();
                 } else {
                     // remove node from its parent's properF1DescEdges list
-                    Edge<T> parentEdge = parentEdges.get(node);
-                    Node<T> parentNode = parentEdge.getSrc();
-                    List<Edge<T>> list = properF1DescEdges.get(parentNode);
+                    Edge<E> parentEdge = parentEdges.get(node);
+                    Node<E> parentNode = parentEdge.getSrc();
+                    List<Edge<E>> list = properF1DescEdges.get(parentNode);
                     list.remove(parentEdge);
                     recursiveRemove(node);
                 }
@@ -277,14 +302,14 @@ public class Tree<T> implements Set<T>, Serializable {
      * </pre>
      */
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(Collection<? extends E> c) {
         if (c == null || c.isEmpty()) {
             return false;
         }
         if (c instanceof Tree) {
-            return addTree((Tree<T>) c, root);
+            return addTree((Tree<E>) c, root);
         } else {
-            for (T o : c) {
+            for (E o : c) {
                 if (!add(o)) {
                     return false;
                 }
@@ -311,11 +336,11 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return false
      * </pre>
      */
-    private boolean addTree(Tree<T> src, Node<T> tgt) {
+    private boolean addTree(Tree<E> src, Node<E> tgt) {
         boolean success = false;
-        for (Node<T> n : src.preOrderTraversal(src.root)) {
-            Edge<T> parentEdgeOfN = src.parentEdges.get(n);
-            Node<T> parentNodeOfN = parentEdgeOfN != null ? parentEdgeOfN.getSrc() : null;
+        for (Node<E> n : src.preOrderTraversal(src.root)) {
+            Edge<E> parentEdgeOfN = src.parentEdges.get(n);
+            Node<E> parentNodeOfN = parentEdgeOfN != null ? parentEdgeOfN.getSrc() : null;
             if (properF1DescEdges.containsKey(parentNodeOfN)) {
                 success = addNode(parentNodeOfN, n);
             } else {
@@ -361,7 +386,7 @@ public class Tree<T> implements Set<T>, Serializable {
         if (c == null) return false;
         Generator g = new Generator();
         while (g.hasNext()) {
-            T label = g.next();
+            E label = g.next();
             for (Object o : c) {
                 if (!label.equals(o)) {
                     g.remove();
@@ -381,7 +406,7 @@ public class Tree<T> implements Set<T>, Serializable {
     /**
      * @effects return root
      */
-    protected Node<T> getRoot() {
+    protected Node<E> getRoot() {
         try {
             return new Node<>(root.getLabel());
         } catch (NotPossibleException e) {
@@ -393,36 +418,62 @@ public class Tree<T> implements Set<T>, Serializable {
     /**
      * @effects return a shallow copy of properF1DescEdges
      */
-    protected HashMap<Node<T>, List<Edge<T>>> getproperF1DescEdges() {
+    protected HashMap<Node<E>, List<Edge<E>>> getProperF1DescEdges() {
         return new HashMap<>(properF1DescEdges);
     }
 
     /**
      * @effects return a shallow copy of parentEdges
      */
-    protected HashMap<Node<T>, Edge<T>> getParentEdges() {
+    protected HashMap<Node<E>, Edge<E>> getParentEdges() {
         return new HashMap<>(parentEdges);
     }
 
-
     /**
-     * This method return a new list capturing node and its proper descendants in pre-order traversal.
+     * This method return a new list capturing node and its proper descendants in pre-order traversal while preserving
+     * the structure of the tree in the return data.
      * @requires node!=null /\ nodes is in properF1DescEdges
      * @effects <pre>
-     *   init a new List
+     *   init a new List of Objects
      *   add 'node' to list
      *   for all Node n that is descendant of 'node'
-     *     add preOrderTraversal(n) to list
+     *     add list of preOrderTraversal(n) to list
      *   return list
      * </pre>
      */
-    private List<Node<T>> preOrderTraversal(Node<T> node) {
-        List<Node<T>> list = new ArrayList<>();
+    private List<Object> preOrderTraversal_PS(Node<E> node) {
+        List<Object> list = new ArrayList<>();
         list.add(node);
-        List<Edge<T>> subtrees = properF1DescEdges.get(node);
+        List<Edge<E>> subtrees = properF1DescEdges.get(node);
         if (subtrees != null) {
-            for (Edge<T> e : subtrees) {
-                Node<T> n = e.getTgt();
+            for (Edge<E> e : subtrees) {
+                Node<E> n = e.getTgt();
+                List<Object> tmp = new ArrayList<>(preOrderTraversal_PS(n));
+                list.add(tmp);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * This method return a new list capturing node and its proper descendants in pre-order traversal. However, this
+     * method also flattens the returned data into a 1-Dimension list.
+     * @requires node!=null /\ nodes is in properF1DescEdges
+     * @effects <pre>
+     *   init a new List of nodes
+     *   add 'node' to list
+     *   for all Node n that is descendant of 'node'
+     *     add all nodes of preOrderTraversal(n) to list
+     *   return list
+     * </pre>
+     */
+    private List<Node<E>> preOrderTraversal(Node<E> node) {
+        List<Node<E>> list = new ArrayList<>();
+        list.add(node);
+        List<Edge<E>> subtrees = properF1DescEdges.get(node);
+        if (subtrees != null) {
+            for (Edge<E> e : subtrees) {
+                Node<E> n = e.getTgt();
                 list.addAll(preOrderTraversal(n));
             }
         }
@@ -436,18 +487,18 @@ public class Tree<T> implements Set<T>, Serializable {
      *     add(Node.label)
      * </pre>
      */
-    public List<T> getLabels() {
-        List<T> labels = new ArrayList<>();
-        List<Node<T>> data = preOrderTraversal(root);
-        for (Node<T> n : data) {
+    public List<E> getLabels() {
+        List<E> labels = new ArrayList<>();
+        List<Node<E>> data = preOrderTraversal(root);
+        for (Node<E> n : data) {
             labels.add(n.getLabel());
         }
         return labels;
     }
 
     /**
-     * @requires parent!=null, child!=null /\ parent.repOK()==true, child.repOK()==true /\
-     *           parent is in properF1DescEdges, child is not in properF1DescEdges
+     * @requires parent!=null, child!=null /\ parent.repOK()==true, child.repOK()==true /\ parent is in
+     * properF1DescEdges, child is not in properF1DescEdges
      * @modifies properF1DescEdges, parentEdges
      * @effects <pre>
      *   if requirements are not satisfied
@@ -458,21 +509,21 @@ public class Tree<T> implements Set<T>, Serializable {
      *     put <child : E:<parent, child>> to parentEdges
      * </pre>
      */
-    private boolean addNode(Node<T> parent, Node<T> child) {
+    private boolean addNode(Node<E> parent, Node<E> child) {
         if (parent == null || child == null || !parent.repOK() || !child.repOK()) {
             return false;
         } else {
             if (!properF1DescEdges.containsKey(parent) || properF1DescEdges.containsKey(child)) {
                 return false;
             } else {
-                Edge<T> e;
+                Edge<E> e;
                 try {
                     e = new Edge<>(parent, child);
                 } catch (NotPossibleException ex) {
                     ex.printStackTrace();
                     return false;
                 }
-                List<Edge<T>> list = properF1DescEdges.get(parent);
+                List<Edge<E>> list = properF1DescEdges.get(parent);
                 list.add(e);
                 properF1DescEdges.put(child, new ArrayList<>());
                 parentEdges.put(child, e);
@@ -496,13 +547,13 @@ public class Tree<T> implements Set<T>, Serializable {
      *       recursiveRemove(n)
      * </pre>
      */
-    private void recursiveRemove(Node<T> node) {
+    private void recursiveRemove(Node<E> node) {
         parentEdges.remove(node);
-        List<Edge<T>> list = properF1DescEdges.get(node);
+        List<Edge<E>> list = properF1DescEdges.get(node);
         properF1DescEdges.remove(node);
         if (list != null) {
-            for (Edge<T> e : list) {
-                Node<T> n = e.getTgt();
+            for (Edge<E> e : list) {
+                Node<E> n = e.getTgt();
                 recursiveRemove(n);
             }
         }
@@ -517,10 +568,10 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return addNode(N:<parent>, N:<child>)
      * </pre>
      */
-    public boolean addNode(T parent, T child) {
+    public boolean addNode(E parent, E child) {
         try {
-            Node<T> p = new Node<>(parent);
-            Node<T> c = new Node<>(child);
+            Node<E> p = new Node<>(parent);
+            Node<E> c = new Node<>(child);
             return addNode(p, c);
         } catch (NotPossibleException e) {
             e.printStackTrace();
@@ -539,12 +590,12 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return level
      * </pre>
      */
-    public int getLevel(T label) {
+    public int getLevel(E label) {
         if (!contains(label)) {
             return -1;
         } else {
             int level = 0;
-            Node<T> expectedRoot;
+            Node<E> expectedRoot;
             try {
                 expectedRoot = new Node<>(label);
             } catch (NotPossibleException e) {
@@ -565,20 +616,18 @@ public class Tree<T> implements Set<T>, Serializable {
      * </pre>
      */
     public int[] getLevelArray() {
-        List<Node<T>> nodes = preOrderTraversal(root);
+        List<Node<E>> nodes = preOrderTraversal(root);
         int[] array = new int[nodes.size()];
         int i = 0;
-        for (Node<T> n : nodes) {
+        for (Node<E> n : nodes) {
             array[i++] = getLevel(n.getLabel());
         }
         return array;
     }
 
     /**
-     * Return the height of this logicLayer.tree.
-     * Remember that:
-     * The height of a node is the length of the longest path from it to a leaf. The
-     * height of the logicLayer.tree is the height of the root.
+     * Return the height of this logicLayer.tree. Remember that: The height of a node is the length of the longest path
+     * from it to a leaf. The height of the tree is the height of the root.
      * @effects <pre>
      *   max = 0
      *   for all number num in getLevelArray()
@@ -608,11 +657,11 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return list!=null /\ list.size()==0
      * </pre>
      */
-    private boolean isLeaf(Node<T> node) {
+    private boolean isLeaf(Node<E> node) {
         if (node == null || !node.repOK()) {
             return false;
         } else {
-            List<Edge<T>> list = properF1DescEdges.get(node);
+            List<Edge<E>> list = properF1DescEdges.get(node);
             return list != null && list.size() == 0;
         }
     }
@@ -626,7 +675,7 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return properF1DescEdges.get(node).size()==0
      * </pre>
      */
-    public boolean isLeaf(T label) {
+    public boolean isLeaf(E label) {
         if (label == null || !contains(label)) {
             return false;
         } else {
@@ -655,15 +704,15 @@ public class Tree<T> implements Set<T>, Serializable {
      *         return false
      * </pre>
      */
-    public boolean hasRightSiblings(Node<T> node) {
+    public boolean hasRightSiblings(Node<E> node) {
         if (!contains(node.getLabel())) {
             return false;
         } else {
-            Edge<T> edge = parentEdges.get(node);
+            Edge<E> edge = parentEdges.get(node);
             if (edge == null) {
                 return false;
             } else {
-                List<Edge<T>> list = properF1DescEdges.get(edge.getSrc());
+                List<Edge<E>> list = properF1DescEdges.get(edge.getSrc());
                 return list != null && list.indexOf(edge) < list.size() - 1;
             }
         }
@@ -671,13 +720,10 @@ public class Tree<T> implements Set<T>, Serializable {
 
     /**
      * <tt>
-     * Return the label of the lowest common ancestor of two given labels in this logicLayer.tree. Return null if
-     * there is no common ancestor or there is a label that equals to the root's label
-     * or two label are equal.
-     * REMEMBER THAT:
-     * In a logicLayer.tree, a node c is the lowest common ancestor of nodes x and y
-     * if c is an ancestor of both x and y, and no proper descendant of c is an ancestor of
-     * x and y.
+     * Return the label of the lowest common ancestor of two given labels in this logicLayer.tree. Return null if there
+     * is no common ancestor or there is a label that equals to the root's label or two label are equal. REMEMBER THAT:
+     * In a logicLayer.tree, a node c is the lowest common ancestor of nodes x and y if c is an ancestor of both x and
+     * y, and no proper descendant of c is an ancestor of x and y.
      * </tt>
      * @Time_complexity O(n ^ 2)
      * @effects <pre>
@@ -696,9 +742,9 @@ public class Tree<T> implements Set<T>, Serializable {
      *     return null
      * </pre>
      */
-    public T lca(T label1, T label2) {
+    public E lca(E label1, E label2) {
         if (contains(label1) && contains(label2) && !label1.equals(root.getLabel()) && !label2.equals(root.getLabel()) && !label1.equals(label2)) {
-            Node<T> n1, n2;
+            Node<E> n1, n2;
             try {
                 n1 = new Node<>(label1);
                 n2 = new Node<>(label2);
@@ -706,7 +752,7 @@ public class Tree<T> implements Set<T>, Serializable {
                 e.printStackTrace();
                 return null;
             }
-            ArrayList<Node<T>> a = new ArrayList<>();
+            ArrayList<Node<E>> a = new ArrayList<>();
             while (n1 != root) {
                 n1 = parentEdges.get(n1).getSrc();
                 a.add(n1);
@@ -714,7 +760,7 @@ public class Tree<T> implements Set<T>, Serializable {
 
             while ((n2 != root)) {
                 n2 = parentEdges.get(n2).getSrc();
-                for (Node<T> n : a) {
+                for (Node<E> n : a) {
                     if (n == n2) {
                         return n2.getLabel();
                     }
@@ -729,8 +775,8 @@ public class Tree<T> implements Set<T>, Serializable {
      * @effects return a shallow copy of this
      */
     @Override
-    public Tree<T> clone() {
-        Tree<T> t = new Tree<>();
+    public Tree<E> clone() {
+        Tree<E> t = new Tree<>();
         t.root = root;
         t.parentEdges.putAll(parentEdges);
         t.properF1DescEdges.putAll(properF1DescEdges);
@@ -751,8 +797,8 @@ public class Tree<T> implements Set<T>, Serializable {
 
 
     /**
-     * This method implemented with pre-order traversal (Visit each node, followed by its children (in pre-order)
-     * from left to right.)
+     * This method implemented with pre-order traversal (Visit each node, followed by its children (in pre-order) from
+     * left to right.)
      */
     public String toString(boolean stylize) {
         if (stylize) {
@@ -767,8 +813,8 @@ public class Tree<T> implements Set<T>, Serializable {
     }
 
     /**
-     * This method implemented with pre-order traversal (Visit each node, followed by its children (in pre-order)
-     * from left to right.)
+     * This method implemented with pre-order traversal (Visit each node, followed by its children (in pre-order) from
+     * left to right.)
      */
     @Override
     public String toString() {
@@ -794,11 +840,11 @@ public class Tree<T> implements Set<T>, Serializable {
      *     invoke toString(sb, e.getTgt(), stylize)
      * </pre>
      */
-    public void toString(StringBuilder sb, Node<T> node, boolean stylize) {
-        Node<T> expectedRoot = node;
-        List<Node<T>> list = new ArrayList<>();
+    public void toString(StringBuilder sb, Node<E> node, boolean stylize) {
+        Node<E> expectedRoot = node;
+        List<Node<E>> list = new ArrayList<>();
         while (expectedRoot != root) {
-            Node<T> tmp = expectedRoot;
+            Node<E> tmp = expectedRoot;
             list.add(tmp);
             expectedRoot = parentEdges.get(expectedRoot).getSrc();
         }
@@ -815,10 +861,10 @@ public class Tree<T> implements Set<T>, Serializable {
         } else {
             sb.append(node.getLabel());
         }
-        List<Edge<T>> subtrees = properF1DescEdges.get(node);
+        List<Edge<E>> subtrees = properF1DescEdges.get(node);
         int size = 0;
         if (subtrees != null) {
-            for (Edge<T> e : subtrees) {
+            for (Edge<E> e : subtrees) {
                 if (size++ < subtrees.size()) {
                     sb.append("\n");
                 }
@@ -848,8 +894,8 @@ public class Tree<T> implements Set<T>, Serializable {
      *     else
      *       sb.append("    ")
      */
-    private void stylizedDeterminer(StringBuilder sb, Node<T> node, boolean isTheAppendingNode) {
-        T label = node.getLabel();
+    private void stylizedDeterminer(StringBuilder sb, Node<E> node, boolean isTheAppendingNode) {
+        E label = node.getLabel();
         // has right sibling(s)
         if (hasRightSiblings(node)) {
             if (isTheAppendingNode) {
@@ -888,7 +934,7 @@ public class Tree<T> implements Set<T>, Serializable {
      *     else
      *       sb.append("    ");
      */
-    private void determiner(StringBuilder sb, Node<T> node, boolean isTheAppendingNode) {
+    private void determiner(StringBuilder sb, Node<E> node, boolean isTheAppendingNode) {
         // has right sibling(s)
         if (hasRightSiblings(node)) {
             if (isTheAppendingNode) {
