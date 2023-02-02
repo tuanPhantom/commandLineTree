@@ -11,6 +11,7 @@ import java.util.*;
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
  *    connected, and so on.
+ *    A tree does not contain duplicate values.
  *    <p>The following is a <b>top-down</b> recursive design that incrementally build a
  *    tree by adding leaf map.
  *
@@ -24,9 +25,9 @@ import java.util.*;
  *
  *   <p>Trees are defined recursively as follows:
  *   Basis
- *    For any node r, T = <r,{r},{}> is a logicLayer.tree.
+ *    For any node r, T = <r,{r},{}> is a tree.
  *   Induction
- *    For all node n and logicLayer.tree T' and for some node p in T':
+ *    For all node n and tree T' and for some node p in T':
  *    n is not in T' ->
  *      T = <T'.root, T'.nodes+{n}, T'.edges+{edge(p,n)}> is a tree
  *
@@ -39,10 +40,10 @@ import java.util.*;
  *     all elements in Lists of properF1DescEdges.values
  *     Edge<T>[i].getTgt() == properF1DescEdges.Node<T>[i] | 0 < i < properF1DescEdges.size
  *
- * @version 1.1
+ * @version 1.2
  * @author Phan Quang Tuan
  */
-public class Tree<T> implements Collection<T>, Serializable {
+public class Tree<T> implements Set<T>, Serializable {
     private Node<T> root;
     private final HashMap<Node<T>, Edge<T>> parentEdges;      // as edges
     private final HashMap<Node<T>, List<Edge<T>>> properF1DescEdges;    // as nodes

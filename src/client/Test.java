@@ -44,6 +44,7 @@ public class Test {
 
             System.out.println("-----------");
             Tree<Integer> e2 = e.clone();
+            e2.add(3);
             System.out.println(e2);
         } catch (NotPossibleException e) {
             e.printStackTrace();

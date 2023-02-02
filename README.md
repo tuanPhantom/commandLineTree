@@ -18,7 +18,7 @@ Besides, `IntelliJ IDEA` has no display problem when running the program.
 
 - This program implements the abstract data type `Tree` (ADT), <strong>partially</strong> following the basic design of
   Dr. Le, Minh Duc.
-- It also implements Java's `Collection` interface.
+- It also implements Java's `Set` interface.
 - A feature that stands out from the prototype design is:
   <br/>Instead of using two `Vector` properties to store nodes and edges, the program is built around two `HashMap`
   properties to reduce time complexity while traversing the tree.
