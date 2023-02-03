@@ -141,10 +141,14 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     private class Generator implements Iterator<E> {
-        private final List<Node<E>> nodes;
+        private List<Node<E>> nodes;
         private int index;
 
         public Generator() {
+            reset();
+        }
+
+        private void reset() {
             //nodes = Tree.this.properF1DescEdges.keySet();     // wrong order
             nodes = preOrderTraversal(root);
         }
@@ -156,11 +160,9 @@ public class Tree<E> implements Set<E>, Serializable {
 
         @Override
         public E next() throws NoSuchElementException {
-            if (hasNext()) {
-                Object[] arr = nodes.toArray();
-                return ((Node<E>) arr[index++]).getLabel();
-            }
-            throw new NoSuchElementException("There is no element");
+//            Object[] arr = nodes.toArray();
+//            return ((Node<E>) arr[index++]).getLabel();
+            return nodes.get(index++).getLabel();
         }
 
         @Override
@@ -169,6 +171,7 @@ public class Tree<E> implements Set<E>, Serializable {
 //            Node<E> node = ((Node<E>) arr[index - 1]);
             Node<E> node = nodes.get(index - 1);
             if (Tree.this.remove(node.getLabel())) {
+                reset();
                 index--;
             }
         }
