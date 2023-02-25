@@ -3,11 +3,14 @@
 A Console-based program to print tree of folders and files of any given path.
 
 Besides, This project provides the implementation of `Tree ADT` that acts as a Set (Collection) and can be reused in any
-other projects. The source code for the Tree and its components is located at `..\commandLineTree\src\logicLayer\tree\`
+other projects. Moreover, the Tree ADT supports weight along each edge. The source code for the Tree and its components
+is located at `..\commandLineTree\src\logicLayer\tree\`
 
 ![img.png](img/1.png)
 
 The Tree ADT implementation supports some methods such as:
+
+- Move subtree from node A to node B
 - AddNode(To parent, From Child)
 - Get subtree of a node
 - Get value (label) at given index in pre-order traversal
@@ -17,10 +20,11 @@ The Tree ADT implementation supports some methods such as:
 - and many more...
 
 ## How to use Tree class:
+
 - Initialize new Tree instance: `Tree<data_type> t = new Tree<>()`
 - Add new label to the tree: `t.add(18)`
 
-See `test.java` for more. 
+See `test.java` for more.
 
 ## Note
 

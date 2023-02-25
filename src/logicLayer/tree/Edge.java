@@ -6,20 +6,18 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
+ * @author Duc Minh Le (ducmle), Phan Quang Tuan
+ * @version 1.1
  * @Overview Represents a binary, directed edge.
  * @attributes <pre>
  *  src     Node<T>
  *  tgt     Node<T>
  *  weight  Object
  * </pre>
- * @Object a typical Edge is E:<s, t> where s is src, t is tgt
- * AF(c) = <s, t>
- * @rep_invariant
- *   src!=null && src.repOK()==true &&
- *   tgt!=null && tgt.repOK()==true &&
- *   src!=tgt
- * @version 1.1
- * @author Duc Minh Le (ducmle), Phan Quang Tuan
+ * @Object <pre>a typical Edge is E:<s, t> where s is src, t is tgt, w is weight
+ *          AF(c) = <s, t, w>
+ *          </pre>
+ * @rep_invariant src!=null /\ src.repOK()==true /\ tgt!=null /\ tgt.repOK()==true /\ src!=tgt
  */
 public class Edge<T> implements Serializable {
     private Node<T> src;
@@ -28,14 +26,13 @@ public class Edge<T> implements Serializable {
 
     /**
      * @requires src != null /\ tgt != null
-     * @effects
-     *   initialise this as Edge(src,tgt)
+     * @effects initialise this as Edge(src,tgt)
      */
     public Edge(Node<T> src, Node<T> tgt) throws NotPossibleException {
-        if (src==null) {
+        if (src == null) {
             throw new NotPossibleException("Null src");
         }
-        if (tgt==null) {
+        if (tgt == null) {
             throw new NotPossibleException("Null tgt");
         }
         this.src = src;
@@ -44,8 +41,7 @@ public class Edge<T> implements Serializable {
 
     /**
      * @requires src != null
-     * @effects
-     *   sets this.src = src
+     * @effects sets this.src = src
      */
     public void setSrc(Node<T> src) {
         if (src != null) {
@@ -54,8 +50,7 @@ public class Edge<T> implements Serializable {
     }
 
     /**
-     * @effects
-     *   return src
+     * @effects return src
      */
     public Node<T> getSrc() {
         return src;
@@ -63,8 +58,7 @@ public class Edge<T> implements Serializable {
 
     /**
      * @requires tgt != null
-     * @effects
-     *   sets this.tgt = tgt
+     * @effects sets this.tgt = tgt
      */
     public void setTgt(Node<T> tgt) {
         if (tgt != null) {
@@ -73,19 +67,14 @@ public class Edge<T> implements Serializable {
     }
 
     /**
-     * @effects
-     *  return tgt;
+     * @effects return tgt;
      */
     public Node<T> getTgt() {
         return tgt;
     }
 
     /**
-     * @effects
-     *  if n.equals(src)
-     *    return true
-     *  else
-     *    return false
+     * @effects if n.equals(src) return true else return false
      */
     public boolean hasSrc(Node<T> n) {
         if (n == null) return false;
@@ -94,11 +83,7 @@ public class Edge<T> implements Serializable {
     }
 
     /**
-     * @effects
-     *  if n.equals(tgt)
-     *    return true
-     *  else
-     *    return false
+     * @effects if n.equals(tgt) return true else return false
      */
     public boolean hasTgt(Node<T> n) {
         if (n == null) return false;
@@ -124,7 +109,7 @@ public class Edge<T> implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":<" + src.toString() + ", " + tgt.toString() + ">";
+        return getClass().getSimpleName() + ":<" + src.toString() + ", " + tgt.toString() + ", " + weight.toString() + ">";
     }
 
     @Override
@@ -132,12 +117,12 @@ public class Edge<T> implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Edge<?> edge = (Edge<?>) o;
-        return Objects.equals(src, edge.src) && Objects.equals(tgt, edge.tgt);
+        return Objects.equals(src, edge.src) && Objects.equals(tgt, edge.tgt) && Objects.equals(weight, edge.weight);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(src, tgt);
+        return Objects.hash(src, tgt, weight);
     }
 
     /**

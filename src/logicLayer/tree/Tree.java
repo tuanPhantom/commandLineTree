@@ -458,7 +458,7 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * @effects return root's value
+     * @effects return root's label
      */
     public E getRoot() {
         return root.getLabel();
@@ -629,6 +629,28 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
+     * This method adds all elements of tree `children` to label `parent`. Note that since Tree is a set, it will not
+     * allow duplicate labels. Therefore, before being added, all elements in `children` must not be included in this
+     * Tree instance. Otherwise, this method has no effect and returns false.
+     * @requires parent != null /\ children != null
+     * @modifies this
+     * @effects <pre>
+     *  if parent != null /\ children != null
+     *      return boolean value of addTree()
+     *  else
+     *      return false
+     * </pre>
+     */
+    public boolean addNode(E parent, Tree<E> children) {
+        try {
+            return addTree(children, new Node<>(parent));
+        } catch (NotPossibleException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * @effects <pre>
      *   if contains(label)==false
      *     return -1
@@ -769,10 +791,10 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * <tt>
-     * Return the label of the lowest common ancestor of two given labels in this tree. Return null if there
-     * is no common ancestor or there is a label that equals to the root's label or two label are equal. REMEMBER THAT:
-     * In a tree, a node c is the lowest common ancestor of nodes x and y if c is an ancestor of both x and
-     * y, and no proper descendant of c is an ancestor of x and y.
+     * Return the label of the lowest common ancestor of two given labels in this tree. Return null if there is no
+     * common ancestor or there is a label that equals to the root's label or two label are equal. REMEMBER THAT: In a
+     * tree, a node c is the lowest common ancestor of nodes x and y if c is an ancestor of both x and y, and no proper
+     * descendant of c is an ancestor of x and y.
      * </tt>
      * @Time_complexity O(n ^ 2)
      * @effects <pre>
@@ -821,23 +843,23 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * A new tree that is a subtree of this class instance is returned by this method. The root of the new tree will be
-     * the specified value.
+     * the specified label.
      * @effects <pre>
-     *  if this.contains(value)
-     *      if value == root
+     *  if this.contains(label)
+     *      if label == root
      *          return a deep clone of this
      *      else
      *          Declare new tree t
-     *          recursive add node that is subtree of t, starting at the specified value
+     *          recursive add node that is subtree of t, starting at the specified label
      *          return t
      *   else
      *      return null
      * </pre>
      */
-    public Tree<E> subTree(E value) {
-        if (contains(value)) {
+    public Tree<E> subTree(E label) {
+        if (contains(label)) {
             try {
-                Node<E> node = new Node<>(value);
+                Node<E> node = new Node<>(label);
                 if (node.equals(root)) {
                     return this.clone();
                 } else {
@@ -853,7 +875,26 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * Recursive add node that is subtree of `tree`, starting at the specified value `parent`
+     * This method moves a node's subtree from the departure node to the arrival node in the tree.
+     * @param departure root label of the subtree that is about to move
+     * @param arrival   the label of the node to which the `departure` subtree will be transferred
+     * @requires <pre>departure != null /\ departure is in this /\ arrival != null /\ arrival is in this
+     *              /\ arrival is not in subtree of departure's subtree</pre>
+     * @modifies this
+     * @effects <pre>
+     *  - get the subtree of `departure` label
+     *  - remove that subtree from this
+     *  - add subtree to node of `arrival` label in this
+     * </pre>
+     */
+    public void move(E departure, E arrival) {
+        Tree<E> subtree = subTree(departure);
+        removeAll(subtree);
+        addNode(arrival, subtree);
+    }
+
+    /**
+     * Recursive add node that is subtree of `tree`, starting at the specified label `parent`
      * @requires tree != null /\ tree != this /\ parent != null /\ parent is not in this
      * @modifies tree
      * @effects <pre>
