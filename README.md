@@ -16,6 +16,12 @@ The Tree ADT implementation supports some methods such as:
 - Get height of a node
 - and many more...
 
+## How to use Tree class:
+- Initialize new Tree instance: `Tree<data_type> t = new Tree<>()`
+- Add new label to the tree: `t.add(18)`
+
+See `test.java` for more. 
+
 ## Note
 
 For some environments such as `Windows cmd` or `Eclipse`, the program may not be displayed correctly due to the use of
