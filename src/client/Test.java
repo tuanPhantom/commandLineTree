@@ -112,15 +112,15 @@ public class Test {
             Tree<Object> tree = new Tree<>();
             tree.add("haha");
             tree.add(5);
-
+            System.out.println(Arrays.toString(tree.toArray(new Object[5])));
             System.out.println("-----------\n");
+
             System.out.println("test add Node:");
             System.out.println("add label `78` to node of label `8`:");
             e5.addNode(3, 78);
             System.out.println(e5);
-            System.out.println(Arrays.toString(tree.toArray(new Object[5])));
-
             System.out.println("-----------\n");
+
             System.out.println("test move subtree from node A to node B:");
             Tree<Integer> e6 = e.clone();
             System.out.println("e6 before:\n" + e6);
@@ -132,8 +132,8 @@ public class Test {
 
             e6.addNode(3, sub_e6);
             System.out.println("\ne6 after move subtree of label `7` to label `3`:\n" + e6);
-
             System.out.println("-----------\n");
+
             System.out.println("Or you can do all e6 steps by calling this method:  e6.move(7, 3):");
             Tree<Integer> e7 = e.clone();
             e7.move(7, 3);
