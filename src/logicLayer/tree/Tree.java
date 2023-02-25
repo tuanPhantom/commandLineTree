@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.4
+ * @version 1.5
  * @overview <pre>A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
