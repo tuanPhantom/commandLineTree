@@ -4,6 +4,7 @@ import common.NotPossibleException;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -186,7 +187,12 @@ public class Tree<E> implements Set<E>, Serializable {
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return (T[]) getLabels().toArray(new Object[a.length]);
+//        if (isEmpty()) throw new RuntimeException("Empty tree!");
+//        Class<?> rootType = getRoot().getClass();
+//        Class<?> elementType = a.getClass().getComponentType();
+//        if (!elementType.isAssignableFrom(rootType))
+//            throw new RuntimeException("data type mismatch between tree elements and input array elements");
+        return getLabels().toArray(a);
     }
 
     /**
@@ -210,7 +216,7 @@ public class Tree<E> implements Set<E>, Serializable {
      * </pre>
      */
     public <T> T[] toArray(T[] a, boolean preserveStructure) {
-        return preserveStructure ? (T[]) preOrderTraversal_PS(root).toArray(new Object[a.length]) : toArray(a);
+        return preserveStructure ? preOrderTraversal_PS(root).toArray(a) : toArray(a);
     }
 
     /**
@@ -264,6 +270,7 @@ public class Tree<E> implements Set<E>, Serializable {
      *       return true
      * </pre>
      */
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove(Object o) {
         if (contains(o)) {
@@ -310,6 +317,7 @@ public class Tree<E> implements Set<E>, Serializable {
      *       return true
      * </pre>
      */
+    @SuppressWarnings("unchecked")
     @Override
     public boolean addAll(Collection<? extends E> c) {
         if (c == null || c.isEmpty()) {
@@ -338,15 +346,14 @@ public class Tree<E> implements Set<E>, Serializable {
         }
     }
 
-
     /**
      * @requires this.isEmpty()==true, src.isEmpty()==false
      * @modifies root, parentEdges, properF1DescEdges
-     * @effects deep copy the structure and all elements of src to this
+     * @effects deep copy the structure and all elements from src to this
      */
     private boolean treeCopy(Tree<E> src) {
         if (!src.isEmpty()) {
-            root = src.getRoot();
+            root = src.getRootNode();
             parentEdges.putAll(src.parentEdges);
             for (Map.Entry<Node<E>, List<Edge<E>>> entry : src.properF1DescEdges.entrySet()) {
                 properF1DescEdges.put(entry.getKey(), new ArrayList<>(entry.getValue()));
@@ -439,15 +446,22 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * @effects return root
+     * @effects return a copy of root's node
      */
-    public Node<E> getRoot() {
+    private Node<E> getRootNode() {
         try {
             return new Node<>(root.getLabel());
         } catch (NotPossibleException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * @effects return root's value
+     */
+    public E getRoot() {
+        return root.getLabel();
     }
 
     /**
@@ -755,9 +769,9 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * <tt>
-     * Return the label of the lowest common ancestor of two given labels in this logicLayer.tree. Return null if there
+     * Return the label of the lowest common ancestor of two given labels in this tree. Return null if there
      * is no common ancestor or there is a label that equals to the root's label or two label are equal. REMEMBER THAT:
-     * In a logicLayer.tree, a node c is the lowest common ancestor of nodes x and y if c is an ancestor of both x and
+     * In a tree, a node c is the lowest common ancestor of nodes x and y if c is an ancestor of both x and
      * y, and no proper descendant of c is an ancestor of x and y.
      * </tt>
      * @Time_complexity O(n ^ 2)
@@ -803,6 +817,79 @@ public class Tree<E> implements Set<E>, Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * A new tree that is a subtree of this class instance is returned by this method. The root of the new tree will be
+     * the specified value.
+     * @effects <pre>
+     *  if this.contains(value)
+     *      if value == root
+     *          return a deep clone of this
+     *      else
+     *          Declare new tree t
+     *          recursive add node that is subtree of t, starting at the specified value
+     *          return t
+     *   else
+     *      return null
+     * </pre>
+     */
+    public Tree<E> subTree(E value) {
+        if (contains(value)) {
+            try {
+                Node<E> node = new Node<>(value);
+                if (node.equals(root)) {
+                    return this.clone();
+                } else {
+                    Tree<E> tree = new Tree<>();
+                    recursiveSubtree(tree, node);
+                    return tree;
+                }
+            } catch (NotPossibleException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Recursive add node that is subtree of `tree`, starting at the specified value `parent`
+     * @requires tree != null /\ tree != this /\ parent != null /\ parent is not in this
+     * @modifies tree
+     * @effects <pre>
+     *  add `parent` to tree
+     *  for any edge e that connect `parent` to its children,
+     *      n = child from e
+     *      add n to tree, with its parent node is `parent`
+     *      invoke recursiveSubtree(tree, n)
+     * </pre>
+     */
+    private void recursiveSubtree(Tree<E> tree, Node<E> parent) {
+        tree.add(parent.getLabel());
+        List<Edge<E>> list = this.properF1DescEdges.get(parent);
+        if (list != null) {
+            for (Edge<E> e : list) {
+                Node<E> child = e.getTgt();
+                tree.addNode(parent, child);
+                recursiveSubtree(tree, child);
+            }
+        }
+    }
+
+    /**
+     * Retrieve one element from this tree at the specified index after traversing it in pre-order and flattening it
+     * into a 1-D array. This method returns null if the index is out of bounds. Remember that indices start at 0.
+     * @effects <pre>
+     *  if index < 0 \/ index >= tree.size
+     *      return null
+     *  else
+     *      return toArray()[index]
+     * </pre>
+     */
+    @SuppressWarnings("unchecked")
+    public E get(int index) {
+        //Array.newInstance(getRoot().getClass(), 0);
+        return (index < 0 || index >= size()) ? null : ((E[]) toArray(new Object[0]))[index];
     }
 
     /**

@@ -82,7 +82,7 @@ public class Test {
             int i = 0;
             while (iter4.hasNext()) {
                 Integer o = iter4.next();
-                if (i==4) {
+                if (i == 4) {
                     iter4.remove();
                 } else {
                     tmp4.add(o);
@@ -94,6 +94,25 @@ public class Test {
             System.out.println(e4);
             System.out.println(Arrays.toString(e4.toArray()));
             System.out.println(tmp4);
+
+            System.out.println("-----------\n");
+
+            System.out.println("test sub tree:");
+            Tree<Integer> e5 = e.clone();
+            System.out.println("e5:\n" + e5);
+            System.out.println("\nsub tree from value '7' of e5:\n" + e5.subTree(7));
+            System.out.println("-----------\n");
+
+            System.out.println("test get the object at index `8` from tree in pre-order traversal:");
+            System.out.println("tree in pre-order traversal: " + Arrays.toString(e5.toArray(new Integer[0])));
+            System.out.println("index `8` object: " + e5.get(8));
+            System.out.println("-----------\n");
+
+            System.out.println("test toArray(T[] a) in case of polymorphism");
+            Tree<Object> tree = new Tree<>();
+            tree.add("haha");
+            tree.add(5);
+            System.out.println(Arrays.toString(tree.toArray(new Object[5])));
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }

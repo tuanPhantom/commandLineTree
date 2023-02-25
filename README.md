@@ -1,8 +1,20 @@
 # commandLineTree
 
-A Console-based program to print tree of folders and files of a specific path.
+A Console-based program to print tree of folders and files of any given path.
+
+Besides, This project provides the implementation of `Tree ADT` that acts as a Set (Collection) and can be reused in any
+other projects. The source code for the Tree and its components is located at `..\commandLineTree\src\logicLayer\tree\`
 
 ![img.png](img/1.png)
+
+The Tree ADT implementation supports some methods such as:
+- AddNode(To parent, From Child)
+- Get subtree of a node
+- Get value (label) at given index in pre-order traversal
+- Find the lowest common ancestor of two given labels
+- Get level of a node
+- Get height of a node
+- and many more...
 
 ## Note
 
