@@ -49,10 +49,12 @@ Specifically, The first `HashMap` attributes is `HashMap<Node<E>, Edge<E>> paren
 <br/>
 This property allows edge storage that connects a node to its parent node. With something similar to a `while` loop, it
 is possible to trace the edges of each node to the ancestral nodes all the way to the root of the tree.
+
 ![img.png](img/2.png)
-<br/><br/>
+
 The Second `HashMap` attributes is `HashMap<Node<E>, List<Edge<E>>> properF1DescEdges`. It records each node's edges to
 its "F1" child nodes.
+
 ![img.png](img/3.png)
 
 ## Usage
