@@ -6,6 +6,10 @@ import logicLayer.tree.Tree;
 
 import java.util.*;
 
+/**
+ * @author Phan Quang Tuan
+ * @version 1.5c
+ */
 public class Test {
     private static <T> void addAll(Tree<T> des, Tree<T> src) {
         System.out.println(des.addAll(src));
@@ -100,7 +104,7 @@ public class Test {
             System.out.println("test sub tree:");
             Tree<Integer> e5 = e.clone();
             System.out.println("e5:\n" + e5);
-            System.out.println("\nsub tree from label '7' of e5:\n" + e5.subTree(7));
+            System.out.println("\nsub tree from label '7' of e5:\n" + e5.subTree(7, false));
             System.out.println("-----------\n");
 
             System.out.println("test get the object at index `8` from tree in pre-order traversal:");
@@ -124,9 +128,9 @@ public class Test {
             System.out.println("test move subtree from node A to node B:");
             Tree<Integer> e6 = e.clone();
             System.out.println("e6 before:\n" + e6);
-            System.out.println("\nsub tree from label '7' of e6:\n" + e6.subTree(7));
+            System.out.println("\nsub tree from label '7' of e6:\n" + e6.subTree(7, false));
 
-            Tree<Integer> sub_e6 = e6.subTree(7);
+            Tree<Integer> sub_e6 = e6.subTree(7, false);
             e6.removeAll(sub_e6);
             System.out.println("\ne6 after remove subtree of 7:\n" + e6);
 

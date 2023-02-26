@@ -8,14 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * @author Phan Quang Tuan
+ * @version 1.5d
  * @Overview A class to input and run the program
  * @attributes <pre>
  * fileCount        int
  * folderCount      int
  * stylize          boolean
  * </pre>
- * @version 1.2
- * @author Phan Quang Tuan
  */
 public class Client {
     private int fileCount;

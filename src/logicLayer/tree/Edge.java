@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * @author Duc Minh Le (ducmle), Phan Quang Tuan
- * @version 1.1
+ * @version 1.5c
  * @Overview Represents a binary, directed edge.
  * @attributes <pre>
  *  src     Node<T>

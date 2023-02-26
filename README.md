@@ -38,20 +38,21 @@ Besides, `IntelliJ IDEA` has no display problem when running the program.
 
 ## Techniques
 
-- This program implements the abstract data type `Tree` (ADT), <strong>partially</strong> following the basic design of
-  Dr. Le, Minh Duc.
+- This program redesigns Dr. Le, Minh Duc's fundamental design (`Node` - `Edge`) to implement the abstract data
+  type `Tree` (ADT).
 - It also implements Java's `Set` interface.
 - A feature that stands out from the prototype design is:
-  <br/>Instead of using two `Vector` properties to store nodes and edges, the program is built around two `HashMap`
+  <br/>Instead of using two `Vector` properties to store `Node` and `Edge`, the program is built around two `HashMap`
   properties to reduce time complexity while traversing the tree.
 
-Specifically, The first `HashMap` attributes is `parentEdges`.
+Specifically, The first `HashMap` attributes is `HashMap<Node<E>, Edge<E>> parentEdges`.
 <br/>
 This property allows edge storage that connects a node to its parent node. With something similar to a `while` loop, it
 is possible to trace the edges of each node to the ancestral nodes all the way to the root of the tree.
 ![img.png](img/2.png)
 <br/><br/>
-The Second `HashMap` attributes is `properF1DescEdges`. It records each node's edges to its "F1" child nodes.
+The Second `HashMap` attributes is `HashMap<Node<E>, List<Edge<E>>> properF1DescEdges`. It records each node's edges to
+its "F1" child nodes.
 ![img.png](img/3.png)
 
 ## Usage
@@ -78,8 +79,8 @@ With this argument, It is possible to distinguish between directory and file.
 Phan Quang Tuan, a Software Engineering student of FIT HANU.
 
 References:
-<br/>[1] Dr. Le, Minh Duc. <i>Object Oriented Program Development Undergraduate Programming CourseBook</i>.
-<br/>[2] Mr. Dang Dinh Quan. SE1 F2021 Course Slides.
+<br/>[1] Dr. Le, Minh Duc. (2021). <i>Object Oriented Program Development Undergraduate Programming CourseBook</i>.
+<br/>[2] Mr. Dang Dinh Quan. <i>Software Engineering 1 Fall 2021 Course Slides.</i>
 <br/>[3] Liskov, B., & Guttag, J. (2001). <i>Program Development in Java: Abstraction, Specification, and
 Object-Oriented Design.</i> Addison-Wesley.
 

@@ -4,12 +4,12 @@ import common.NotPossibleException;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.5
+ * @version 1.5d
  * @overview <pre>A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
@@ -43,6 +43,7 @@ import java.util.*;
  *   properF1DescEdges!=null && all Lists in properF1DescEdges are not null /\ do not have duplicate values &&
  *     all elements in Lists of properF1DescEdges.values
  *     Edge<E>[i].getTgt() == properF1DescEdges.Node<E>[i] | 0 < i < properF1DescEdges.size
+ * @jdk_version_requires 1.8
  * </pre>
  */
 public class Tree<E> implements Set<E>, Serializable {
@@ -125,7 +126,7 @@ public class Tree<E> implements Set<E>, Serializable {
     public boolean contains(Object o) {
         try {
             Node<?> node = new Node<>(o);
-            return root != null && root.getLabel() == o || properF1DescEdges.containsKey(node);
+            return root != null && root.equals(o) || properF1DescEdges.containsKey(node);
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }
@@ -250,12 +251,14 @@ public class Tree<E> implements Set<E>, Serializable {
                 properF1DescEdges.put(root, new ArrayList<>());
                 return true;
             } else {
-                return addNode(root, node);
+                return addNode(root, node, false);
             }
         }
     }
 
     /**
+     * Remove an object from this tree. In other words, terminates any connection between the given object and its
+     * parent, as well as its descendants.
      * @modifies all attributes of this
      * @effects <pre>
      *   if contains(label)==false
@@ -296,7 +299,11 @@ public class Tree<E> implements Set<E>, Serializable {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return getLabels().containsAll(c);
+//        return getLabels().containsAll(c);
+        List<E> labels = new ArrayList<>();
+        labels.add(root.getLabel());
+        labels.addAll(properF1DescEdges.keySet().stream().map(Node::getLabel).collect(Collectors.toList()));
+        return labels.containsAll(c);
     }
 
     /**
@@ -324,11 +331,12 @@ public class Tree<E> implements Set<E>, Serializable {
             return false;
         }
 
-        for (E o : c) {
-            if (contains(o) && !isLeaf(o)) {
-                return false;
-            }
-        }
+//        for (E o : c) {
+//            if (contains(o) && !isLeaf(o)) {
+//                return false;
+//            }
+//        }
+        if (c.stream().anyMatch(o -> contains(o) && !isLeaf(o))) return false;
 
         if (c instanceof Tree) {
             if (isEmpty()) {
@@ -337,12 +345,12 @@ public class Tree<E> implements Set<E>, Serializable {
                 return addTree((Tree<E>) c, root);
             }
         } else {
-            for (E o : c) {
-                if (!add(o)) {
-                    return false;
-                }
-            }
-            return true;
+//            for (E o : c) {
+//                if (!add(o)) {
+//                    return false;
+//                }
+//            }
+            return c.stream().allMatch(this::internal_add);
         }
     }
 
@@ -355,7 +363,8 @@ public class Tree<E> implements Set<E>, Serializable {
         if (!src.isEmpty()) {
             root = src.getRootNode();
             parentEdges.putAll(src.parentEdges);
-            for (Map.Entry<Node<E>, List<Edge<E>>> entry : src.properF1DescEdges.entrySet()) {
+            Set<Map.Entry<Node<E>, List<Edge<E>>>> pairs = src.properF1DescEdges.entrySet();
+            for (Map.Entry<Node<E>, List<Edge<E>>> entry : pairs) {
                 properF1DescEdges.put(entry.getKey(), new ArrayList<>(entry.getValue()));
             }
             return true;
@@ -371,10 +380,10 @@ public class Tree<E> implements Set<E>, Serializable {
      *   for all Node n in src.properF1DescEdges (in pre-order)
      *   -> so it should look like this:
      *   for all Node n in src.preOrderTraversal(src.root))
-     *     if nearest parent node of n is in this.properF1DescEdges (case: after adding \/ src.root is leaf of this)
+     *     if parent node of n is in this.properF1DescEdges (case: after adding \/ src.root is leaf of this)
      *        invoke addNode(that node, n) and record its return value
      *     else
-     *        invoke addNode(tgt, n) and record its return value (case: begin adding)
+     *        invoke addNode(tgt, n) and record its return value (case: beginning of adding new tree to a node)
      *   if all return values are true
      *     return true
      *   else
@@ -383,13 +392,14 @@ public class Tree<E> implements Set<E>, Serializable {
      */
     private boolean addTree(Tree<E> src, Node<E> tgt) {
         boolean success = false;
-        for (Node<E> n : src.preOrderTraversal(src.root)) {
+        List<Node<E>> nodes = src.preOrderTraversal(src.root);
+        for (Node<E> n : nodes) {
             Edge<E> parentEdgeOfN = src.parentEdges.get(n);
             Node<E> parentNodeOfN = parentEdgeOfN != null ? parentEdgeOfN.getSrc() : null;
             if (properF1DescEdges.containsKey(parentNodeOfN)) {
-                success = addNode(parentNodeOfN, n);
+                success = addNode(parentNodeOfN, n, false);
             } else {
-                success = addNode(tgt, n);
+                success = addNode(tgt, n, false);
             }
         }
         return success;
@@ -407,14 +417,14 @@ public class Tree<E> implements Set<E>, Serializable {
     @Override
     public boolean removeAll(Collection<?> c) {
         if (c == null) return false;
-        for (Object o : c) {
-            if (!remove(o)) {
-                return false;
-            }
-        }
-        return true;
+//        for (Object o : c) {
+//            if (!remove(o)) {
+//                return false;
+//            }
+//        }
+//        return true;
+        return c.stream().allMatch(this::remove);
     }
-
 
     /**
      * @Time_complexity O(n ^ 2)
@@ -448,7 +458,7 @@ public class Tree<E> implements Set<E>, Serializable {
     /**
      * @effects return a copy of root's node
      */
-    private Node<E> getRootNode() {
+    protected Node<E> getRootNode() {
         try {
             return new Node<>(root.getLabel());
         } catch (NotPossibleException e) {
@@ -537,15 +547,19 @@ public class Tree<E> implements Set<E>, Serializable {
      * </pre>
      */
     public List<E> getLabels() {
-        List<E> labels = new ArrayList<>();
-        List<Node<E>> data = preOrderTraversal(root);
-        for (Node<E> n : data) {
-            labels.add(n.getLabel());
-        }
-        return labels;
+//        List<E> labels = new ArrayList<>();
+//        List<Node<E>> data = preOrderTraversal(root);
+//        for (Node<E> n : data) {
+//            labels.add(n.getLabel());
+//        }
+//        return labels;
+        return preOrderTraversal(root).stream().map(Node::getLabel).collect(Collectors.toList());
     }
 
     /**
+     * This method add a new node to the specified parent node. The tree must not be empty, otherwise this method has no
+     * effect and returns false.
+     * @param bypassCondition ensure that pre-conditions are satisfied
      * @requires parent!=null, child!=null /\ parent.repOK()==true, child.repOK()==true /\ parent is in
      * properF1DescEdges, child is not in properF1DescEdges /\ parent neq child
      * @modifies properF1DescEdges, parentEdges
@@ -558,30 +572,28 @@ public class Tree<E> implements Set<E>, Serializable {
      *     put <child : E:<parent, child>> to parentEdges
      * </pre>
      */
-    private boolean addNode(Node<E> parent, Node<E> child) {
-        if (parent == null || child == null || !parent.repOK() || !child.repOK() || parent.equals(child)) {
-            return false;
-        } else {
-            if (!properF1DescEdges.containsKey(parent) || properF1DescEdges.containsKey(child)) {
+    private boolean addNode(Node<E> parent, Node<E> child, boolean bypassCondition) {
+        if (!bypassCondition) {
+            if (parent == null || child == null || !parent.repOK() || !child.repOK() || parent.equals(child) || !properF1DescEdges.containsKey(parent) || properF1DescEdges.containsKey(child)) {
                 return false;
-            } else {
-                Edge<E> e;
-                try {
-                    e = new Edge<>(parent, child);
-                } catch (NotPossibleException ex) {
-                    ex.printStackTrace();
-                    return false;
-                }
-                List<Edge<E>> list = properF1DescEdges.get(parent);
-                list.add(e);
-                properF1DescEdges.put(child, new ArrayList<>());
-                parentEdges.put(child, e);
-                return true;
             }
         }
+        Edge<E> e;
+        try {
+            e = new Edge<>(parent, child);
+        } catch (NotPossibleException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        List<Edge<E>> list = properF1DescEdges.get(parent);
+        list.add(e);
+        properF1DescEdges.put(child, new ArrayList<>());
+        parentEdges.put(child, e);
+        return true;
     }
 
     /**
+     * Remove any node that is in subtree of the given node.
      * @requires node is in nodes /\ node!=root
      * @modifies all attributes of this
      * @effects <pre>
@@ -621,7 +633,7 @@ public class Tree<E> implements Set<E>, Serializable {
         try {
             Node<E> p = new Node<>(parent);
             Node<E> c = new Node<>(child);
-            return addNode(p, c);
+            return addNode(p, c, false);
         } catch (NotPossibleException e) {
             e.printStackTrace();
             return false;
@@ -747,14 +759,11 @@ public class Tree<E> implements Set<E>, Serializable {
      * </pre>
      */
     public boolean isLeaf(E label) {
-        if (label == null || !contains(label)) {
+        try {
+            List<Edge<E>> children = properF1DescEdges.get(new Node<>(label));
+            return children != null && children.size() == 0;
+        } catch (NotPossibleException e) {
             return false;
-        } else {
-            try {
-                return properF1DescEdges.get(new Node<>(label)).size() == 0;
-            } catch (NotPossibleException e) {
-                return false;
-            }
         }
     }
 
@@ -843,12 +852,15 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * A new tree that is a subtree of this class instance is returned by this method. The root of the new tree will be
-     * the specified label.
+     * the specified label. If `remove` argument is true, detach the subtree of the given label from this tree.
      * @effects <pre>
      *  if this.contains(label)
      *      if label == root
+     *          if remove==true
+     *              clear this
      *          return a deep clone of this
      *      else
+     *          remove label from its parent's properF1DescEdges list if remove==true
      *          Declare new tree t
      *          recursive add node that is subtree of t, starting at the specified label
      *          return t
@@ -856,15 +868,24 @@ public class Tree<E> implements Set<E>, Serializable {
      *      return null
      * </pre>
      */
-    public Tree<E> subTree(E label) {
+    public Tree<E> subTree(E label, boolean remove) {
         if (contains(label)) {
             try {
                 Node<E> node = new Node<>(label);
                 if (node.equals(root)) {
-                    return this.clone();
+                    Tree<E> t = this.clone();
+                    if (remove) clear();
+                    return t;
                 } else {
-                    Tree<E> tree = new Tree<>();
-                    recursiveSubtree(tree, node);
+                    if (remove) {
+                        // remove node from its parent's properF1DescEdges list
+                        Edge<E> parentEdge = parentEdges.get(node);
+                        Node<E> parentNode = parentEdge.getSrc();
+                        List<Edge<E>> list = properF1DescEdges.get(parentNode);
+                        list.remove(parentEdge);
+                    }
+                    Tree<E> tree = new Tree<>(label);
+                    recursiveSubtree(tree, node, remove);
                     return tree;
                 }
             } catch (NotPossibleException e) {
@@ -875,26 +896,9 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * This method moves a node's subtree from the departure node to the arrival node in the tree.
-     * @param departure root label of the subtree that is about to move
-     * @param arrival   the label of the node to which the `departure` subtree will be transferred
-     * @requires <pre>departure != null /\ departure is in this /\ arrival != null /\ arrival is in this
-     *              /\ arrival is not in subtree of departure's subtree</pre>
-     * @modifies this
-     * @effects <pre>
-     *  - get the subtree of `departure` label
-     *  - remove that subtree from this
-     *  - add subtree to node of `arrival` label in this
-     * </pre>
-     */
-    public void move(E departure, E arrival) {
-        Tree<E> subtree = subTree(departure);
-        removeAll(subtree);
-        addNode(arrival, subtree);
-    }
-
-    /**
-     * Recursive add node that is subtree of `tree`, starting at the specified label `parent`
+     * Recursive add nodes that are proper descendant of the specified label `parent` to the given tree. If `remove`
+     * argument is true, detach all the added nodes to `tree` from this instance.
+     * @param remove indicates that the method will remove all the added nodes to `tree` from this instance.
      * @requires tree != null /\ tree != this /\ parent != null /\ parent is not in this
      * @modifies tree
      * @effects <pre>
@@ -903,18 +907,44 @@ public class Tree<E> implements Set<E>, Serializable {
      *      n = child from e
      *      add n to tree, with its parent node is `parent`
      *      invoke recursiveSubtree(tree, n)
+     *  if remove == true
+     *      remove node from this
      * </pre>
      */
-    private void recursiveSubtree(Tree<E> tree, Node<E> parent) {
-        tree.add(parent.getLabel());
-        List<Edge<E>> list = this.properF1DescEdges.get(parent);
-        if (list != null) {
-            for (Edge<E> e : list) {
-                Node<E> child = e.getTgt();
-                tree.addNode(parent, child);
-                recursiveSubtree(tree, child);
-            }
+    private void recursiveSubtree(Tree<E> tree, Node<E> parent, boolean remove) {
+        List<Edge<E>> children = this.properF1DescEdges.get(parent);
+        for (Edge<E> e : children) {
+            Node<E> child = e.getTgt();
+            tree.addNode(parent, child, true);
+            recursiveSubtree(tree, child, remove);
         }
+        if (remove) deleteSingleNode(parent);
+    }
+
+    /**
+     * @modifies parentEdges, properF1DescEdges
+     * @effects remove only the given node from this
+     */
+    private void deleteSingleNode(Node<E> node) {
+        parentEdges.remove(node);
+        properF1DescEdges.remove(node);
+    }
+
+    /**
+     * This method moves a node's subtree from the departure node to the arrival node in the tree.
+     * @param departure root label of the subtree that is about to move
+     * @param arrival   the label of the node to which the `departure` subtree will be transferred
+     * @requires <pre>departure != null /\ departure is in this /\ arrival != null /\ arrival is in this
+     *              /\ arrival is not in subtree of departure's subtree</pre>
+     * @modifies this
+     * @effects <pre>
+     *  - remove the subtree of `departure` label from this
+     *  - add subtree to node of `arrival` label in this
+     * </pre>
+     */
+    public void move(E departure, E arrival) {
+        Tree<E> subtree = subTree(departure, true);
+        addNode(arrival, subtree);
     }
 
     /**
@@ -931,6 +961,40 @@ public class Tree<E> implements Set<E>, Serializable {
     public E get(int index) {
         //Array.newInstance(getRoot().getClass(), 0);
         return (index < 0 || index >= size()) ? null : ((E[]) toArray(new Object[0]))[index];
+    }
+
+    /**
+     * This method operates the same as add(), except it does not check the input conditions. Please make sure these
+     * conditions are satisfied before using.
+     * @requires label != null /\ label is not in this
+     * @modifies all attributes of this
+     * @effects <pre>
+     *   if label==null \/ contain(label)==true
+     *     return false
+     *   else
+     *     if root==null
+     *       set root = N:<label>
+     *       add N:<label> to nodes
+     *     else
+     *       return addNode(root, N:<label>)
+     * </pre>
+     */
+    private boolean internal_add(E label) {
+        Node<E> node;
+        try {
+            node = new Node<>(label);
+        } catch (NotPossibleException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (root == null) {
+            root = node;
+            properF1DescEdges.put(root, new ArrayList<>());
+            return true;
+        } else {
+            return addNode(root, node, true);
+        }
     }
 
     /**
