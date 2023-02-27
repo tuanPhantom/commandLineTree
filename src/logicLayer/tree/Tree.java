@@ -935,14 +935,21 @@ public class Tree<E> implements Set<E>, Serializable {
      * @param departure root label of the subtree that is about to move
      * @param arrival   the label of the node to which the `departure` subtree will be transferred
      * @requires <pre>departure != null /\ departure is in this /\ arrival != null /\ arrival is in this
-     *              /\ arrival is not in subtree of departure's subtree</pre>
+     *              /\ arrival is not in subtree of departure's subtree /\ departure neq arrival</pre>
      * @modifies this
      * @effects <pre>
+     *  - If departure and arrival are the same \/ getLevel(departure) < getLevel(arrival)
+     *      the method action should be terminated.
      *  - remove the subtree of `departure` label from this
      *  - add subtree to node of `arrival` label in this
      * </pre>
      */
     public void move(E departure, E arrival) {
+        int dep_level = getLevel(departure);
+        int arrival_level = getLevel(arrival);
+        if (departure.equals(arrival) || dep_level < arrival_level) {
+            return;
+        }
         Tree<E> subtree = subTree(departure, true);
         addNode(arrival, subtree);
     }
