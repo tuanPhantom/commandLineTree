@@ -663,7 +663,8 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * Return the number of edges along the unique path between it and the root node.
+     * Return the number of edges along the unique path between it and the root node. If the label is not in the tree,
+     * return -1
      * @effects <pre>
      *   if contains(label)==false
      *     return -1
@@ -711,7 +712,7 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * Return The height of a node which is the number of edges from the node to the deepest leaf. The height of a tree
-     * is a height of the root.
+     * is a height of the root. If the label is not in the tree, return -1
      * @effects <pre>
      *  if label is not in this
      *      return -1
