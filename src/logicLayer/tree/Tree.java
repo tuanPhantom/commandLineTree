@@ -663,6 +663,7 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
+     * Return the number of edges along the unique path between it and the root node.
      * @effects <pre>
      *   if contains(label)==false
      *     return -1
@@ -709,8 +710,28 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * Return the height of this logicLayer.tree. Remember that: The height of a node is the length of the longest path
-     * from it to a leaf. The height of the tree is the height of the root.
+     * Return The height of a node which is the number of edges from the node to the deepest leaf. The height of a tree
+     * is a height of the root.
+     * @effects <pre>
+     *  if label is not in this
+     *      return -1
+     *  else
+     *      return treeHeight - getLevel(label)
+     * </pre>
+     */
+    public int getHeight(E label) {
+        if (!contains(label)) {
+            return -1;
+        }
+        int treeHeight = getHeight();
+        int labelLevel = getLevel(label);
+        return treeHeight - labelLevel;
+    }
+
+    /**
+     * Return the height of this tree. Remember that: The height of a node is the length of the longest path from it to
+     * a leaf. The height of the tree is the height of the root.<br/> In other words, The height of a node is the number
+     * of edges from the node to the deepest leaf. The height of a tree is a height of the root.
      * @effects <pre>
      *   max = 0
      *   for all number num in getLevelArray()
@@ -854,7 +875,9 @@ public class Tree<E> implements Set<E>, Serializable {
      * A new tree that is a subtree of this class instance is returned by this method. The root of the new tree will be
      * the specified label. If `remove` argument is true, detach the subtree of the given label from this tree.
      * @effects <pre>
-     *  if this.contains(label)
+     *  if contains(label) == false /\ remove == false
+     *      return null
+     *  else if this.contains(label)
      *      if label == root
      *          if remove==true
      *              clear this
@@ -869,28 +892,29 @@ public class Tree<E> implements Set<E>, Serializable {
      * </pre>
      */
     public Tree<E> subTree(E label, boolean remove) {
-        if (contains(label)) {
-            try {
-                Node<E> node = new Node<>(label);
-                if (node.equals(root)) {
-                    Tree<E> t = this.clone();
-                    if (remove) clear();
-                    return t;
-                } else {
-                    if (remove) {
-                        // remove node from its parent's properF1DescEdges list
-                        Edge<E> parentEdge = parentEdges.get(node);
-                        Node<E> parentNode = parentEdge.getSrc();
-                        List<Edge<E>> list = properF1DescEdges.get(parentNode);
-                        list.remove(parentEdge);
-                    }
-                    Tree<E> tree = new Tree<>(label);
-                    recursiveSubtree(tree, node, remove);
-                    return tree;
+        if (!contains(label) && !remove) {
+            return null;
+        }
+        try {
+            Node<E> node = new Node<>(label);
+            if (node.equals(root)) {
+                Tree<E> t = this.clone();
+                if (remove) clear();
+                return t;
+            } else {
+                if (remove) {
+                    // remove node from its parent's properF1DescEdges list
+                    Edge<E> parentEdge = parentEdges.get(node);
+                    Node<E> parentNode = parentEdge.getSrc();
+                    List<Edge<E>> list = properF1DescEdges.get(parentNode);
+                    list.remove(parentEdge);
                 }
-            } catch (NotPossibleException e) {
-                e.printStackTrace();
+                Tree<E> tree = new Tree<>(label);
+                recursiveSubtree(tree, node, remove);
+                return tree;
             }
+        } catch (NotPossibleException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -938,16 +962,14 @@ public class Tree<E> implements Set<E>, Serializable {
      *              /\ arrival is not in subtree of departure's subtree /\ departure neq arrival</pre>
      * @modifies this
      * @effects <pre>
-     *  - If departure and arrival are the same \/ getLevel(departure) < getLevel(arrival)
+     *  - If getLevel(departure) <= getLevel(arrival)
      *      the method action should be terminated.
      *  - remove the subtree of `departure` label from this
      *  - add subtree to node of `arrival` label in this
      * </pre>
      */
     public void move(E departure, E arrival) {
-        int dep_level = getLevel(departure);
-        int arrival_level = getLevel(arrival);
-        if (departure.equals(arrival) || dep_level < arrival_level) {
+        if (getLevel(departure) <= getLevel(arrival)) {
             return;
         }
         Tree<E> subtree = subTree(departure, true);

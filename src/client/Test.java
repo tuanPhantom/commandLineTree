@@ -142,6 +142,11 @@ public class Test {
             Tree<Integer> e7 = e.clone();
             e7.move(7, 3);
             System.out.println(e7);
+
+            System.out.println("-----------\n");
+            System.out.println("Test get height of a label");
+            Tree<Integer> e8 = e.clone();
+            System.out.println("height of label 7: " + e8.getHeight(7));
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }

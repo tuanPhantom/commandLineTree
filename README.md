@@ -10,11 +10,12 @@ is located at `..\commandLineTree\src\logicLayer\tree\`
 
 The Tree ADT implementation supports some methods such as:
 
-- Move subtree from node A to node B
-- AddNode(To parent, From Child)
 - Get subtree of a node
+- Move subtree of node A to node B
+- AddNode(To parent, From Child)
 - Get value (label) at given index in pre-order traversal
 - Find the lowest common ancestor of two given labels
+- Pre-order Traversal
 - Get level of a node
 - Get height of a node
 - and many more...
@@ -52,8 +53,8 @@ is possible to trace the edges of each node to the ancestral nodes all the way t
 
 ![img.png](img/2.png)
 
-The Second `HashMap` attributes is `HashMap<Node<E>, List<Edge<E>>> properF1DescEdges`. It records each node's edges to
-its "F1" child nodes.
+<br/>The Second `HashMap` attributes is `HashMap<Node<E>, List<Edge<E>>> properF1DescEdges`. It records each node's
+edges to its "F1" child nodes.<br/><br/>
 
 ![img.png](img/3.png)
 
