@@ -74,7 +74,7 @@ public abstract class GenerateTree {
         long maxMemory = runtime.maxMemory();
         long freeMemory = runtime.freeMemory();
         long totalMemory = runtime.totalMemory();   // Get current size of heap in bytes
-        System.out.println("Performance during executing Algorithm:");
+        System.out.println("Performance during executing the algorithm:");
         System.out.println("Available Processors: " + processors);
         System.out.println("Max Available Memory: " + maxMemory / (Math.pow(1024, 2)) + " MB");
         System.out.println("Free Memory: " + freeMemory / (Math.pow(1024, 2)) + " MB");
