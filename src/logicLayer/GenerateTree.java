@@ -19,6 +19,8 @@ import java.util.concurrent.ForkJoinPool;
  */
 public abstract class GenerateTree {
     /**
+     * Warning: This method is deprecated since v1.7, please use <code><Strong>buildTreeAsync()</Strong></code>
+     * instead.
      * @requires directory != null
      * @effects <pre>
      *  if directory == null \/ directory.isDirectory()==false
@@ -31,6 +33,7 @@ public abstract class GenerateTree {
      *        addAll buildTree(f) to tree
      * </pre>
      */
+    @Deprecated
     private static Tree<File> buildTree(File directory) {
         Tree<File> tree = new Tree<>();
         if (directory != null && directory.isDirectory()) {
@@ -49,7 +52,8 @@ public abstract class GenerateTree {
     }
 
     /**
-     * This is an operation that constructs the string representation of the tree
+     * Warning: This method is deprecated since v1.7, please use <code><Strong>displayFilesAsync()</Strong></code>
+     * instead.<br/> This is an operation that constructs the string representation of the tree
      * @requires file == null /\ file.isDirectory()
      * @effects <pre>
      *   if stylize==false
@@ -59,6 +63,7 @@ public abstract class GenerateTree {
      *   at the end: calculate the measurements
      * </pre>
      */
+    @Deprecated
     public static String displayFiles(File file, boolean stylize) {
         try {
             return buildTree(file).toString(stylize);
