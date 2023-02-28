@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.6
+ * @version 1.7
  * @Overview A class to input and run the program
  * @attributes <pre>
  * fileCount        int
@@ -87,8 +87,8 @@ public class Client {
         if (f.isDirectory()) {
             long startTime, stopTime, elapsedTime;
             startTime = System.currentTimeMillis();
-//            System.out.println(GenerateTree.displayFilesAsync(f, stylize));
-            System.out.println(GenerateTree.displayFiles(f, stylize));
+            System.out.println(GenerateTree.displayFilesAsync(f, stylize));
+//            System.out.println(GenerateTree.displayFiles(f, stylize));
             stopTime = System.currentTimeMillis();
             elapsedTime = stopTime - startTime;
             System.out.println("current folder: " + folderPath);
