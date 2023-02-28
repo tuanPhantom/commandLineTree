@@ -1,0 +1,5 @@
+Release v1.6 [28/02/2023]:
+** Version name: "v1.6: Build Tree Async"
+- Added Asynchronous methods to build the Tree from a given directory, but these methods are currently disabled due to poor performance.
+- Added performance measurement method.
+
