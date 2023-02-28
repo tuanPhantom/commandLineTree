@@ -1,10 +1,14 @@
-Release v1.7 [01/03/2023]:
-** Version name: "v1.7: Build Tree Async"
+v1.7: Build Tree Async
+Release date: 01/03/2023
+Level: Minor update
 - Added a new "fast-enough" asynchronous method to build a Tree from a certain directory, which is also the default way from now on.
 
-Release v1.6 [28/02/2023]:
-** Version name: "v1.6: Build Tree Async"
+v1.6: Build Tree Async
+Release date: 28/02/2023
+Level: Major update
 - Added Asynchronous methods to build the Tree from a given directory, but these methods are currently disabled due to poor performance.
 - Added performance measurement method.
 
-Releases prior to v1.6 are not included in this changelog due to my laziness.
+Note
+- Releases prior to v1.6 are not included in this changelog due to my laziness.
+- The patches may not be listed since I need to find a girlfriend (lol).
