@@ -16,6 +16,7 @@ import java.util.concurrent.ForkJoinPool;
  * @author Phan Quang Tuan
  * @version 1.7
  * @Overview this class constructs and returns tree
+ * @jdk_version_requires >= 1.8
  */
 public abstract class GenerateTree {
     /**
@@ -283,6 +284,8 @@ public abstract class GenerateTree {
                         tree.add(subfile);
                     }
                 }
+                // .allOf is await for the completion of multiple promises, while .join() is await for a single promise
+                // await == pause coroutine == block current thread
                 CompletableFuture.allOf(childFutures.toArray(new CompletableFuture[0])).join();
                 childFutures.forEach(t -> tree.addAll(treeMap.get(t)));
             }
@@ -328,6 +331,8 @@ public abstract class GenerateTree {
                         tree.add(subfile);
                     }
                 }
+                // .allOf is await for the completion of multiple promises, while .join() is await for a single promise
+                // await == pause coroutine == block current thread
                 CompletableFuture.allOf(childFutures.toArray(new CompletableFuture[0])).join();
                 childFutures.forEach(t -> tree.addAll(treeMap.get(t)));
             }
@@ -353,12 +358,12 @@ public abstract class GenerateTree {
         Tree<File> tree = new Tree<>();
         tree.add(file);
         try {
-            buildTreeAsync(tree).get();
+            buildTreeAsync(tree).get();     // await
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             System.out.println("attempt to use larger number of threads...");
             try {
-                buildTreeAsync(tree, new ForkJoinPool(20)).get();
+                buildTreeAsync(tree, new ForkJoinPool(20)).get();       // await
             } catch (InterruptedException | ExecutionException ex) {
                 ex.printStackTrace();
             }
