@@ -1,3 +1,9 @@
+v1.7a: Clean up
+Release date: 08/03/2023
+Level: Patch
+- clean up dumb comments. Unused methods (old implementations) are moved to the file 'GenerateTree.DO_NOT_USE.txt'.
+- Added method `getDegree(E label)` in Tree.java
+
 v1.7: Build Tree Async
 Release date: 01/03/2023
 Level: Minor update

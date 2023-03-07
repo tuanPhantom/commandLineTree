@@ -20,7 +20,10 @@ The Tree ADT implementation supports some methods such as:
 - Get height of a node
 - and many more...
 
-## How to use Tree class:
+## How to run
+- run `Client.java` which is located at the path `..\commandLineTree\src\client\Client.java`
+
+## How to reuse Tree class:
 
 - Initialize new Tree instance: `Tree<data_type> t = new Tree<>()`
 - Add new label to the tree: `t.add(18)`

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.5d
+ * @version 1.7a
  * @overview <pre>A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
@@ -148,7 +148,7 @@ public class Tree<E> implements Set<E>, Serializable {
         private int index;
 
         public Generator() {
-            //nodes = Tree.this.properF1DescEdges.keySet();     // wrong order
+            //nodes = Tree.this.properF1DescEdges.keySet();     // this will produce the tree with wrong order
             nodes = preOrderTraversal(root);
         }
 
@@ -159,15 +159,11 @@ public class Tree<E> implements Set<E>, Serializable {
 
         @Override
         public E next() throws NoSuchElementException {
-//            Object[] arr = nodes.toArray();
-//            return ((Node<E>) arr[index++]).getLabel();
             return nodes.get(index++).getLabel();
         }
 
         @Override
         public void remove() {
-//            Object[] arr = nodes.toArray();
-//            Node<E> node = ((Node<E>) arr[index - 1]);
             Node<E> node = nodes.get(index - 1);
             if (Tree.this.remove(node.getLabel())) {
                 index--;
@@ -188,6 +184,7 @@ public class Tree<E> implements Set<E>, Serializable {
 
     @Override
     public <T> T[] toArray(T[] a) {
+        // redundant type check:
 //        if (isEmpty()) throw new RuntimeException("Empty tree!");
 //        Class<?> rootType = getRoot().getClass();
 //        Class<?> elementType = a.getClass().getComponentType();
@@ -664,7 +661,7 @@ public class Tree<E> implements Set<E>, Serializable {
 
     /**
      * Return the number of edges along the unique path between it and the root node. If the label is not in the tree,
-     * return -1
+     * return -1.<br/> Related to Depth.
      * @effects <pre>
      *   if contains(label)==false
      *     return -1
@@ -750,6 +747,24 @@ public class Tree<E> implements Set<E>, Serializable {
             }
         }
         return max;
+    }
+
+    /**
+     * Return the total number of children of a node is called the degree of the node. If the label is not in
+     * this tree, return -1.
+     * @effects <pre>
+     *     - get the list of children of the given label (use properF1DescEdges)
+     *     - return list's size or -1 if null
+     * </pre>
+     */
+    public int getDegree(E label) {
+        List<?> children = null;
+        try {
+            children = properF1DescEdges.get(new Node<>(label));
+        } catch (NotPossibleException e) {
+            e.printStackTrace();
+        }
+        return children != null ? children.size() : -1;
     }
 
     /**
@@ -1046,7 +1061,7 @@ public class Tree<E> implements Set<E>, Serializable {
         return Objects.equals(root, tree.root) && Objects.equals(parentEdges, tree.parentEdges) && Objects.equals(properF1DescEdges, tree.properF1DescEdges);
     }
 
-    //    /**
+//    /**
 //     * @effects <pre>
 //     * if this satisfies rep_invariant
 //     *   return true
@@ -1057,7 +1072,6 @@ public class Tree<E> implements Set<E>, Serializable {
 //    private boolean repOK() {
 //
 //    }
-
 
     /**
      * This method implemented with pre-order traversal (Visit each node, followed by its children (in pre-order) from

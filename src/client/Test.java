@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.5c
+ * @version 1.7a
  */
 public class Test {
     private static <T> void addAll(Tree<T> des, Tree<T> src) {
@@ -144,9 +144,10 @@ public class Test {
             System.out.println(e7);
 
             System.out.println("-----------\n");
-            System.out.println("Test get height of a label");
+            System.out.println("Test get height, degree of a label");
             Tree<Integer> e8 = e.clone();
             System.out.println("height of label 7: " + e8.getHeight(7));
+            System.out.println("degree of label 7: " + e8.getDegree(7));
         } catch (NotPossibleException e) {
             e.printStackTrace();
         }
