@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.7b
+ * @version 1.8
  * @overview <pre>A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
@@ -385,7 +385,7 @@ public class Tree<E> implements Set<E>, Serializable {
     /**
      * @requires this.isEmpty()==true, src.isEmpty()==false
      * @modifies root, parentEdges, properF1DescEdges
-     * @effects deep copy the structure and all elements from src to this
+     * @effects shallow copy the structure and all elements from src to this
      */
     private boolean treeCopy(Tree<E> src) {
         if (!src.isEmpty()) {
@@ -1047,6 +1047,33 @@ public class Tree<E> implements Set<E>, Serializable {
         return opt.orElse(null);
     }
 
+    public void set(E label, E replacement) throws NotPossibleException {
+        if (!contains(label)) return;
+        Node<E> nLabel = new Node<>(label);
+        Node<E> nReplacement = new Node<>(replacement);
+        Edge<E> parent = parentEdges.get(nLabel);
+        List<Edge<E>> children = properF1DescEdges.get(nLabel);
+
+        parent.getTgt().setLabel(replacement);
+        parentEdges.remove(nLabel);
+        parentEdges.put(nReplacement, parent);
+
+        children.forEach(e -> {
+            Node<E> child = e.getTgt();
+            parentEdges.put(child, e);
+        });
+
+        properF1DescEdges.remove(nLabel);
+        properF1DescEdges.put(nReplacement, children);
+    }
+
+    public void swap(E label1, E label2) throws NotPossibleException {
+        E dummyLabel = (E) new Object();
+        set(label2, dummyLabel);
+        set(label1, label2);
+        set(dummyLabel, label1);
+    }
+
     /**
      * This method operates the same as add(), except it does not check the input conditions. Please make sure these
      * conditions are satisfied before using.
@@ -1080,7 +1107,7 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * Deep cloning method
+     * Shallow cloning method
      * @effects return a deep copy of this
      */
     @Override
