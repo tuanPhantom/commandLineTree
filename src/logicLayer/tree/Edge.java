@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * @author Duc Minh Le (ducmle), Phan Quang Tuan
- * @version 1.5c
+ * @version 1.7b
  * @Overview Represents a binary, directed edge.
  * @attributes <pre>
  *  src     Node<T>
@@ -109,7 +109,7 @@ public class Edge<T> implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ":<" + src.toString() + ", " + tgt.toString() + ", " + weight.toString() + ">";
+        return getClass().getSimpleName() + ":<" + src.toString() + ", " + tgt.toString() + ", " + (weight != null ? weight.toString() : null) + ">";
     }
 
     @Override

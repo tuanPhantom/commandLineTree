@@ -1,3 +1,8 @@
+v1.7b: Clean up
+Release date: 13/03/2023
+Level: Patch
+- Fix bugs
+
 v1.7a: Clean up
 Release date: 08/03/2023
 Level: Patch

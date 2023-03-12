@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Phan Quang Tuan
- * @version 1.7a
+ * @version 1.7b
  * @overview <pre>A tree is a set of map that are connected to each other by
  *    edges such that one node, called the root, is connected to some map,
  *    each of these map is connected to some other map that have not been
@@ -43,13 +43,14 @@ import java.util.stream.Collectors;
  *   properF1DescEdges!=null && all Lists in properF1DescEdges are not null /\ do not have duplicate values &&
  *     all elements in Lists of properF1DescEdges.values
  *     Edge<E>[i].getTgt() == properF1DescEdges.Node<E>[i] | 0 < i < properF1DescEdges.size
+ *     (since parent edge of root is also counted (NULL))
  * @jdk_version_requires 1.8
  * </pre>
  */
 public class Tree<E> implements Set<E>, Serializable {
     private Node<E> root;
     private final HashMap<Node<E>, Edge<E>> parentEdges;      // as edges
-    private final HashMap<Node<E>, List<Edge<E>>> properF1DescEdges;    // as nodes without the root.
+    private final HashMap<Node<E>, List<Edge<E>>> properF1DescEdges;    // as nodes
 
     /**
      * @effects init this as T:<null, {}, {}>
@@ -72,8 +73,7 @@ public class Tree<E> implements Set<E>, Serializable {
         this();
         if (label != null) {
             Node<E> r = new Node<>(label);
-            root = r;
-            properF1DescEdges.put(r, new ArrayList<>());
+            addRoot(r);
         } else {
             throw new NotPossibleException("Null Node");
         }
@@ -95,6 +95,23 @@ public class Tree<E> implements Set<E>, Serializable {
         if (!valid) {
             throw new NotPossibleException("Invalid Collection: " + c);
         }
+    }
+
+
+    /**
+     * A method to add a new node as the root of this tree.
+     * @requires node != null /\ node.repOK == true
+     * @modifies this
+     * @effects <pre>
+     *  - assign root = node
+     *  - put tuple (root, null) to this.parentEdges
+     *  - put tuple (root, []) to this.properF1DescEdges
+     * </pre>
+     */
+    private void addRoot(Node<E> node) {
+        root = node;
+        parentEdges.put(root, null);
+        properF1DescEdges.put(root, new ArrayList<>());
     }
 
     /**
@@ -131,6 +148,24 @@ public class Tree<E> implements Set<E>, Serializable {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * From List interface:<br/> Returns the index of the first occurrence of the specified element in this list, or -1
+     * if this list does not contain the element. More formally, returns the lowest index <tt>i</tt> such that
+     * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
+     * or -1 if there is no such index.
+     * @param o element to search for
+     * @return the index of the first occurrence of the specified element in this list, or -1 if this list does not
+     * contain the element
+     * @throws ClassCastException   if the type of the specified element is incompatible with this list (<a
+     *                              href="Collection.html#optional-restrictions">optional</a>)
+     * @throws NullPointerException if the specified element is null and this list does not permit null elements (<a
+     *                              href="Collection.html#optional-restrictions">optional</a>)
+     */
+    public int indexOf(Object o) {
+        List<Object> data = Arrays.asList(toArray());
+        return data.indexOf(o);
     }
 
     /**
@@ -224,8 +259,7 @@ public class Tree<E> implements Set<E>, Serializable {
      *     return false
      *   else
      *     if root==null
-     *       set root = N:<label>
-     *       add N:<label> to nodes
+     *       add N:<label> as root
      *     else
      *       return addNode(root, N:<label>)
      * </pre>
@@ -244,8 +278,7 @@ public class Tree<E> implements Set<E>, Serializable {
             }
 
             if (root == null) {
-                root = node;
-                properF1DescEdges.put(root, new ArrayList<>());
+                addRoot(node);
                 return true;
             } else {
                 return addNode(root, node, false);
@@ -297,9 +330,7 @@ public class Tree<E> implements Set<E>, Serializable {
     @Override
     public boolean containsAll(Collection<?> c) {
 //        return getLabels().containsAll(c);
-        List<E> labels = new ArrayList<>();
-        labels.add(root.getLabel());
-        labels.addAll(properF1DescEdges.keySet().stream().map(Node::getLabel).collect(Collectors.toList()));
+        List<E> labels = properF1DescEdges.keySet().stream().map(Node::getLabel).collect(Collectors.toList());
         return labels.containsAll(c);
     }
 
@@ -750,8 +781,8 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
-     * Return the total number of children of a node is called the degree of the node. If the label is not in
-     * this tree, return -1.
+     * Return the total number of children of a node is called the degree of the node. If the label is not in this tree,
+     * return -1.
      * @effects <pre>
      *     - get the list of children of the given label (use properF1DescEdges)
      *     - return list's size or -1 if null
@@ -891,7 +922,7 @@ public class Tree<E> implements Set<E>, Serializable {
      * A new tree that is a subtree of this class instance is returned by this method. The root of the new tree will be
      * the specified label. If `remove` argument is true, detach the subtree of the given label from this tree.
      * @effects <pre>
-     *  if contains(label) == false /\ remove == false
+     *  if contains(label) == false
      *      return null
      *  else if this.contains(label)
      *      if label == root
@@ -908,7 +939,7 @@ public class Tree<E> implements Set<E>, Serializable {
      * </pre>
      */
     public Tree<E> subTree(E label, boolean remove) {
-        if (!contains(label) && !remove) {
+        if (!contains(label)) {
             return null;
         }
         try {
@@ -978,14 +1009,14 @@ public class Tree<E> implements Set<E>, Serializable {
      *              /\ arrival is not in subtree of departure's subtree /\ departure neq arrival</pre>
      * @modifies this
      * @effects <pre>
-     *  - If getLevel(departure) <= getLevel(arrival)
+     *  - If getLevel(departure) < getLevel(arrival)
      *      the method action should be terminated.
      *  - remove the subtree of `departure` label from this
      *  - add subtree to node of `arrival` label in this
      * </pre>
      */
     public void move(E departure, E arrival) {
-        if (getLevel(departure) <= getLevel(arrival)) {
+        if (getLevel(departure) < getLevel(arrival)) {
             return;
         }
         Tree<E> subtree = subTree(departure, true);
@@ -1009,6 +1040,14 @@ public class Tree<E> implements Set<E>, Serializable {
     }
 
     /**
+     * Return the node that encapsulates the label, or null if the label is not in this tree.
+     */
+    private Node<E> get(E label) {
+        Optional<Node<E>> opt = properF1DescEdges.keySet().stream().filter(n -> n.getLabel().equals(label)).findFirst();
+        return opt.orElse(null);
+    }
+
+    /**
      * This method operates the same as add(), except it does not check the input conditions. Please make sure these
      * conditions are satisfied before using.
      * @requires label != null /\ label is not in this
@@ -1018,8 +1057,7 @@ public class Tree<E> implements Set<E>, Serializable {
      *     return false
      *   else
      *     if root==null
-     *       set root = N:<label>
-     *       add N:<label> to nodes
+     *       add N:<label> as root
      *     else
      *       return addNode(root, N:<label>)
      * </pre>
@@ -1034,8 +1072,7 @@ public class Tree<E> implements Set<E>, Serializable {
         }
 
         if (root == null) {
-            root = node;
-            properF1DescEdges.put(root, new ArrayList<>());
+            addRoot(node);
             return true;
         } else {
             return addNode(root, node, true);
