@@ -1047,27 +1047,56 @@ public class Tree<E> implements Set<E>, Serializable {
         return opt.orElse(null);
     }
 
-    public void set(E label, E replacement) throws NotPossibleException {
-        if (!contains(label)) return;
-        Node<E> nLabel = new Node<>(label);
-        Node<E> nReplacement = new Node<>(replacement);
+    /**
+     * A method to change the label with the provided replacement.
+     * @requires label is in this /\ label neq replacement
+     * @modifies this
+     * @effects <pre>
+     *  1. Arrange
+     *  - get the parent edge of the label
+     *  - get the children of the label
+     *
+     *  2. from the parent edge, replace the target node with the given replacement
+     *      - target node's label
+     *      - parentEdges old node reference
+     *      - parentEdges new node reference
+     *
+     *  3. replace the old reference of label's node in properF1DescEdges
+     * </pre>
+     */
+    public void set(E label, E replacement) {
+        if (!contains(label) && label.equals(replacement)) return;
+        Node<E> nLabel = null;
+        Node<E> nReplacement = null;
+        try {
+            nLabel = new Node<>(label);
+            nReplacement = new Node<>(replacement);
+        } catch (NotPossibleException e) {
+            e.printStackTrace();
+        }
         Edge<E> parent = parentEdges.get(nLabel);
         List<Edge<E>> children = properF1DescEdges.get(nLabel);
 
+        // from the parent edge, replace the target node with the given replacement
         parent.getTgt().setLabel(replacement);
         parentEdges.remove(nLabel);
         parentEdges.put(nReplacement, parent);
 
-        children.forEach(e -> {
-            Node<E> child = e.getTgt();
-            parentEdges.put(child, e);
-        });
-
+        // replace the old reference of label's node in properF1DescEdges
         properF1DescEdges.remove(nLabel);
         properF1DescEdges.put(nReplacement, children);
     }
 
-    public void swap(E label1, E label2) throws NotPossibleException {
+    /**
+     * @requires label1 != null /\ label2 != null /\ label1 neq label2
+     * @modifies this
+     * @effects <pre>
+     *     set label2 with dummy object
+     *     set label1 with label2
+     *     set dummy object with label1
+     * </pre>
+     */
+    public void swap(E label1, E label2) {
         E dummyLabel = (E) new Object();
         set(label2, dummyLabel);
         set(label1, label2);
